@@ -4,10 +4,10 @@ const MongoClient = require('mongodb').MongoClient;
 const User = require("../models/userSchema")
 const uri = "mongodb+srv://mp2_carreonpunovelascco:carreonpunovelasco@cluster0.dhmee.mongodb.net/MP2?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true });
+
 client.connect(err => {
   const collection = client.db("test").collection("devices");
   // perform actions on the collection object
-
 
   app.post("/user", urlencoder, (req,res)=>{
     let username=req.body.username
