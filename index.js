@@ -1,6 +1,7 @@
 const path = require('path')
 const hbs = require('express-hbs')
 const express = require('express')
+const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const expressSession = require('express-session')
@@ -9,8 +10,55 @@ const app = express()
 
 const port = process.env.PORT || 3000
 
+function connect() {
+    databaseUrl = "mongodb+srv://mp2_carreonpunovelascco:carreonpunovelasco@cluster0.dhmee.mongodb.net/MP2?retryWrites=true&w=majority"
+    mongoose.connection
+      .on('error', console.log)
+      .on('disconnected', connect)
+      .on('connected', () => console.log("Connected!"))
+
+      return mongoose.connect(databaseUrl, {
+          keepAlive: 1,
+          useNewUrlParser: true,
+          useUnifiedTopology: true
+      });
+}
+
+
+// register handlebars conditional helper
+hbs.registerHelper('iff', function (v1, operator, v2, options) {
+    switch (operator) {
+        case '==':
+            return (v1 == v2) ? options.fn(this) : options.inverse(this);
+        case '===':
+            return (v1 === v2) ? options.fn(this) : options.inverse(this);
+        case '!=':
+            return (v1 != v2) ? options.fn(this) : options.inverse(this);
+        case '!==':
+            return (v1 !== v2) ? options.fn(this) : options.inverse(this);
+        case '<':
+            return (v1 < v2) ? options.fn(this) : options.inverse(this);
+        case '<=':
+            return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+        case '>':
+            return (v1 > v2) ? options.fn(this) : options.inverse(this);
+        case '>=':
+            return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+        case '&&':
+            return (v1 && v2) ? options.fn(this) : options.inverse(this);
+        case '||':
+            return (v1 || v2) ? options.fn(this) : options.inverse(this);
+        default:
+            return options.inverse(this);
+    }
+})
+
+hbs.registerHelper('add', function (v1, v2, options) {
+    return parseInt(v1) + parseInt(v2)
+})
+
 // setup express server
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: false }))
 
 // MS * S * M * H * D
 app.use(cookieParser('movieMetroSecret', {
@@ -35,6 +83,8 @@ app.set('views', path.join(__dirname, 'views'))
 
 app.listen(port, () => {
     console.log(`Server started at port: ${port}`)
+    console.log(`Attempting to connect to atlas...`)
+    connect()
 })
 
 app.use('/', require('./routes')) // include routes
