@@ -27,7 +27,7 @@ const movieSchema = new mongoose.Schema({
     },
 
     price: {
-        type: Buffer,
+        type: Number,
         required: [true, 'Price is required']
     },
 
