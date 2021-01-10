@@ -20,6 +20,12 @@ module.exports = (function() {
     })
 
     route.get('/', (req, res) => {
+        let message = null
+        if (req.session.message) {
+            message = {...req.session.message}
+            delete req.session.message
+        }
+
         Movie.find({}, {}, {sort: {'date': -1}}).lean().exec(function (err, results) {
             let limit = 20
             
@@ -28,12 +34,20 @@ module.exports = (function() {
                 layout: 'default',
                 active: { home: true },
                 results,
-                user: req.session.user
+                user: req.session.user,
+                message: message
             })
         })
     })
 
     route.get('/movies', (req, res) => {
+        let message = null
+
+        if (req.session.message) {
+            message = {...req.session.message}
+            delete req.session.message
+        }
+
         if (req.query.q) { // query was made, do some code for getting search
             let parameters = req.query.q.replace(/\s+/, ' ').trim().split(/\s/).reduce(
                 (accum, curr) => {
@@ -57,7 +71,8 @@ module.exports = (function() {
                     maxPages,
                     page,
                     results: (results.length == 0) ? results : results.slice((page - 1) * limit, page * limit),
-            user: req.session.user
+                    user: req.session.user,
+                    message
                 })
             })
         } else {
@@ -74,11 +89,18 @@ module.exports = (function() {
     })
 
     route.get('/login', (req, res) => {
+        let message = null
+        if (req.session.message) {
+            message = {...req.session.message}
+            delete req.session.message
+        }
+
         res.render('login', {
             title: 'Movie Metro - Log In',
             layout: 'account',
             active: {login: true},
-            user: req.session.user
+            user: req.session.user,
+            message: message
         })
     })
 
@@ -90,7 +112,6 @@ module.exports = (function() {
     })
 
     route.post('/login', (req, res) => {
-        console.log(req.body)
         if (req.body.username && req.body.password) {
             Users.findOne({'username': req.body.username}).then((doc)=>{
                 if(doc == null){
@@ -139,15 +160,79 @@ module.exports = (function() {
     })
 
     route.get('/register', (req, res) => {
+        let message = null
+
+        if (req.session.message) {
+            message = {...req.session.message}
+            delete req.session.message
+        }
+
         res.render('register', {
             title: 'Movie Metro - Register',
             layout: 'account',
-            active: {register: true}
+            active: {register: true},
+            message
         })
     })
 
     route.post('/register', (req, res) => {
+        if (req.body.username && req.body.password && req.body.email && req.body.name) {
+            Users.findOne( { $or: [{
+                'username': req.body.username,
+                'email': req.body.email
+            }] } ).then((doc) => {
+                if (!doc) {
+                    const newUser = new Users({
+                        username: req.body.username,
+                        password: req.body.password,
+                        email: req.body.email,
+                        fullname: req.body.name
+                    });
 
+                    newUser.save(function (err, user) {
+                        if (err) {
+                            res.render('register', {
+                                title: 'Movie Metro - Register',
+                                layout: 'account',
+                                active: {register: true},
+                                message: {
+                                    classes: 'text-white bg-danger',
+                                    message: 'Uh oh! Looks like that something went wrong while trying to register!'
+                                }
+                            })
+                        } else {
+                            req.session.message = {
+                                classes: 'text-white bg-success',
+                                message: 'Yay! You\'ve successfully registered!'
+                            }
+
+                            res.redirect('/login')
+                        }
+                    })
+                } else {
+                    res.render('register', {
+                        title: 'Movie Metro - Register',
+                        layout: 'account',
+                        active: {register: true},
+                        message: {
+                            classes: 'text-white bg-danger',
+                            message: 'Oops! Looks like that email or username is already taken!'
+                        }
+                    })
+                }
+            })
+        } else {
+            res.render('register', {
+                title: 'Movie Metro - Register',
+                layout: 'account',
+                active: {register: true},
+                message: {
+                    classes: 'text-white bg-danger',
+                    message: 'Oops! Make sure you\'ve filled in all your data!'
+                }
+            })
+        }
     })
+
     return route;
 })()
