@@ -1,15 +1,15 @@
 const mongoose = require('mongoose')
 
-const userSchema = require('./Model/userSchema.js')
+const userSchema = require('./userSchema.js')
 const User = mongoose.model('user', userSchema, 'user')
 
-const movieSchema = require('./Model/movieSchema.js')
+const movieSchema = require('./movieSchema.js')
 const Movie = mongoose.model('movie', movieSchema, 'movie')
 
-const moviepostSchema = require('./Model/moviepostSchema.js')
+const moviepostSchema = require('./moviepostSchema.js')
 const MoviePost = mongoose.model('moviepost', moviepostSchema, 'moviepost')
 
-const commentSchema = require('./Model/commentSchema.js')
+const commentSchema = require('./commentSchema.js')
 const Comment = mongoose.model('comment', commentSchema, 'comment')
 
 
