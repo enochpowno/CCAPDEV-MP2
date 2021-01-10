@@ -57,12 +57,29 @@ hbs.registerHelper('add', function (v1, v2, options) {
     return parseInt(v1) + parseInt(v2)
 })
 
+hbs.registerHelper('img', function (string) {
+    let regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+    if (regexp.test(string)) {
+        return string;
+    } else {
+        let string0 = string.buffer
+        if (!string0) {
+            string0 = string
+        } else {
+            string0 = string0.toString('base64')
+        }
+
+        return `data:image/png;base64,${string0}`
+    }
+})
+
 // setup express server
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // MS * S * M * H * D
 app.use(cookieParser('movieMetroSecret', {
-    maxAge: 1000 * 60 * 60 * 24 * 7 * 3 // 3 weeks
+    maxAge: 1000 * 60 * 60 * 24 * 7 * 3, // 3 weeks
+    httpOnly: false
 }))
 
 app.use(expressSession({

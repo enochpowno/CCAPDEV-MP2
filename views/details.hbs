@@ -1,0 +1,40 @@
+<div class="container" id="movieDetails">
+    <div class="row">
+        <div class="col-md-4 p-5">
+            <img src="{{img result.poster}}" height="auto" width="100%">
+        </div>
+        <div class="col-md-8 pt-5 pl-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="font-weight-bold" style="text-transform: capitalize;">{{result.title}}</h3>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <p><i class="fas fa-thumbs-up"></i> &nbsp; &nbsp; {{result.upvote}} like this</p>
+                    <p><i class="fas fa-thumbs-down"></i> &nbsp; &nbsp; {{result.downvote}} hated this</p>
+                    <p><b>Price: </b> &#8369; {{result.price}}</p>
+                </div>
+                <div class="col-md-8">
+                    <h5 class="font-weight-bold">Synopsis:</h5>
+                    <p><i>{{result.synopsis}}</i></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h1 class="display-8 px-5">Reviews</h1>
+    {{#each reviews}}
+        <div class="row review-row px-5 py-5">
+            <b class="display-6">{{this.title}}</b>
+            <p>by: <a href="/profile?id={{this.user_id}}">{{this.username}}</a></p>
+            <p>{{this.review}}</p>
+
+            <a href="/movies/review?id={{this._id}}&movie={{../result._id}}#review">View comments</a>
+        </div>
+    {{else}}
+        <b class="display-6 px-5">There aren't any reviews here yet...</b>
+    {{/each}}
+    <br/>
+    <br/>
+</div>

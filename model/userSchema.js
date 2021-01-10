@@ -19,6 +19,16 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Your email is required']
+    },
+
+    photo: {
+        data: Buffer,
+        contentType: String
+    },
+
+    reviews: {
+        type: Array,
+        default: () => []
     }
 })
 

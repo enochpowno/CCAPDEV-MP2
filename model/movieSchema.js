@@ -34,6 +34,16 @@ const movieSchema = new mongoose.Schema({
     status: {
         type: String,
         required: [true, 'Status is required']
+    },
+
+    reviews: {
+        type: Array,
+        default: () => []
+    },
+    
+    date: {
+        type: Date,
+        default: () => Date.now
     }
 })
 

@@ -92,10 +92,6 @@ footer p {
     color: #ffffff;
 }
 
-section #recentMovies .display-6{
-    text-shadow: 2px 2px cyan, 4px 4px rgb(133, 0, 126);
-}
-
 #search .row a{
     color: var(--darker);
 }
@@ -105,12 +101,26 @@ section #recentMovies .display-6{
     color: var(--purple-lighter);
 }
 
-.movie-row:not(:last-child) {
-    border-bottom: 1px solid var(--bs-light) !important;
+section #topMovie .display-6 {
+    color: cyan;
+    text-shadow:2px 2px rgb(133, 0, 126), 4px 4px yellow;
+}
+
+section #recentMovies .display-6 {
+    color: yellow;
+    text-shadow: 2px 2px cyan, 4px 4px rgb(133, 0, 126);
+}
+
+.movie-row:nth-child(2n), .review-row:nth-child(2n) {
+    background-color: #f0f0f0;
 }
 
 .movie-row h4{
     font-weight: bold;
     color: cyan;
-    text-shadow: 2px 2px violet;
+    transition: all ease-in-out 250ms;
+}
+
+.movie-row h4:hover {
+    color: violet;
 }

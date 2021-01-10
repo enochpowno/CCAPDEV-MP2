@@ -3,8 +3,14 @@ const mongoose = require('mongoose')
 const movieSchema = require('./model/movieSchema.js')
 const Movie = mongoose.model('movie', movieSchema, 'movie')
 
+const reviewSchema = require('./model/reviewSchema.js')
+const Review = mongoose.model('review', reviewSchema, 'review')
+
 const userSchema = require('./model/userSchema.js')
 const Users = mongoose.model('user', userSchema, 'user')
+
+const commentSchema = require('./model/commentSchema.js')
+const Comment = mongoose.model('comment', commentSchema, 'comment')
 
 module.exports = (function() {
     const route = require('express').Router()
@@ -15,6 +21,7 @@ module.exports = (function() {
                 req.session.user = req.cookies["user"]
             }
         }
+
 
         next()
     })
@@ -29,13 +36,16 @@ module.exports = (function() {
         Movie.find({}, {}, {sort: {'date': -1}}).lean().exec(function (err, results) {
             let limit = 20
             
-            res.render('index', {
-                title: 'Movie Metro',
-                layout: 'default',
-                active: { home: true },
-                results,
-                user: req.session.user,
-                message: message
+            Movie.findOne({}, {}, { sort: {'upvote': -1} }).lean().exec(function(err1, results1) {
+                res.render('index', {
+                    title: 'Movie Metro',
+                    layout: 'default',
+                    active: { home: true },
+                    results,
+                    top: results1,
+                    user: req.session.user,
+                    message: message
+                })
             })
         })
     })
@@ -88,6 +98,89 @@ module.exports = (function() {
         }
     })
 
+    route.get('/movies/details', (req, res) => {
+        let message = null
+
+        if (req.session.message) {
+            message = {...req.session.message}
+            delete req.session.message
+        }
+
+        if (req.query.id) {
+            Movie.findOne({ _id: req.query.id }).lean().exec((err, result) => {
+                if (result) {
+                    Review.find({ '_id' : { $in : result.reviews }}, {}, { sort: { 'date': -1 } }).lean().exec((err, reviews) => {
+                        res.render('details', {
+                            layout: 'default',
+                            active: { movies: true  },
+                            result,
+                            reviews,
+                            user: req.session.user,
+                            message
+                        })
+                    })
+                } else {
+                    res.status(404).render('error/404', {
+                        layout: 'account',
+                        active: { movies: true  },
+                        user: req.session.user,
+                        message
+                    })
+                }
+            })
+        } else {
+            res.redirect('/movies')
+        }
+    })
+
+    route.get('/movies/review', (req, res) => {
+        let message = null
+
+        if (req.session.message) {
+            message = {...req.session.message}
+            delete req.session.message
+        }
+
+        if (req.query.id && req.query.movie) {
+            Movie.findOne({ _id: req.query.movie }).lean().exec(function (err, movie) {
+                if (movie) {
+                    Review.findOne({ '_id' : req.query.id}).lean().exec(function (err, review) {
+                        if (review) {
+                            Comment.find({ '_id': {$in: review.comments} }, {}, {'sort': {'date': -1}}).lean().exec(function (err, comments) {
+                                console.log(comments)
+                                res.render('reviews', {
+                                    layout: 'default',
+                                    active: { movies: true  },
+                                    movie: movie,
+                                    review: review,
+                                    comments: comments,
+                                    user: req.session.user,
+                                    message
+                                })
+                            })
+                        } else {
+                            res.status(404).render('error/404', {
+                                layout: 'account',
+                                active: { movies: true  },
+                                user: req.session.user,
+                                message
+                            })
+                        }
+                    })
+                } else {
+                    res.status(404).render('error/404', {
+                        layout: 'account',
+                        active: { movies: true  },
+                        user: req.session.user,
+                        message
+                    })
+                }
+            })
+        } else {
+            res.redirect('/movies')
+        }
+    })
+
     route.get('/login', (req, res) => {
         let message = null
         if (req.session.message) {
@@ -102,13 +195,6 @@ module.exports = (function() {
             user: req.session.user,
             message: message
         })
-    })
-
-    route.get('/logout', (req, res) => {
-        delete req.session.user
-        res.clearCookie('user')
-
-        res.redirect('/')
     })
 
     route.post('/login', (req, res) => {
@@ -127,9 +213,13 @@ module.exports = (function() {
                 }else{
                     if (doc.password === req.body.password) { 
                         if (req.body.cookie) {
-                            res.cookie('user', doc)
+                            res.cookie('user', doc, {
+                                maxAge: 1000 * 60 * 60 * 24 * 7 * 3, // 3 weeks
+                                httpOnly: false
+                            })
                         }
 
+                        delete doc.reviews
                         req.session.user = doc
                         res.redirect("/")
                     } 
@@ -157,6 +247,13 @@ module.exports = (function() {
                 }
             })
         }
+    })
+
+    route.get('/logout', (req, res) => {
+        delete req.session.user
+        res.clearCookie('user')
+
+        res.redirect('/')
     })
 
     route.get('/register', (req, res) => {
@@ -230,6 +327,66 @@ module.exports = (function() {
                     classes: 'text-white bg-danger',
                     message: 'Oops! Make sure you\'ve filled in all your data!'
                 }
+            })
+        }
+    })
+
+    route.get('/profile', (req, res) => {
+        var id = null;
+
+        if (req.session.user && !req.query.id) {
+            id = req.session.user._id
+        } else if (req.query.id) {
+            id = req.query.id
+        }
+
+        let message = null
+
+        if (req.session.message) {
+            message = {...req.session.message}
+            delete req.session.message
+        }
+
+        if (id) {
+            Users.findById(id).lean().then((user)=>{
+                Review.find({ '_id': { $in: user.reviews } }).lean().then((reviews) => {
+                    let movieIds = reviews.reduce((accum, curr) => {
+                        accum.push(curr.movie_id)
+                        return accum
+                    }, [])
+
+                    Movie.find({ '_id': {$in: movieIds} }).lean().then((movies) => {
+                        let reviews0 = reviews.reduce((accum, curr) => {
+                            for(i = 0; i < movies.length; i++) {
+                                if (movies[i]._id == curr.movie_id) {
+                                    accum.push({
+                                        review: curr,
+                                        movie: movies[i]
+                                    })
+                                    break
+                                }
+                            }
+
+                            return accum
+                        }, [])
+
+                        res.render('profile', {
+                            layout: 'account',
+                            active: { profile: true  },
+                            user: req.session.user,
+                            profile: user,
+                            reviews: reviews0,
+                            message
+                        })
+                    })
+                })
+            })
+        } else {
+            res.status(404).render('error/404', {
+                layout: 'account',
+                active: { profile: true  },
+                user: req.session.user,
+                message
             })
         }
     })
