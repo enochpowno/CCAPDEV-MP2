@@ -472,7 +472,31 @@ module.exports = (function() {
                 }
             }
 
-            res.redirect('/admin')
+            Review.find({movie_id: doc._id.toString()}).lean().then((docs) => {
+                let reviewPromises = []
+
+                docs.forEach(doc => {
+                    reviewPromises.push(new Promise((resolve, reject) => {
+                        Comment.deleteMany({review_id: doc._id.toString()}).then(() => {
+                            resolve()
+                        })
+                    }))
+
+                    reviewPromises.push(new Promise((resolve, reject) => {
+                        Users.updateMany({}, {
+                            $pull: {
+                                reviews: doc._id.toString()
+                            }
+                        }).then(() => {
+                            resolve()
+                        })
+                    }))
+                });
+
+                Promise.all(reviewPromises).then(() => {
+                    res.redirect('/admin')
+                })
+            })
         })
     })
 
