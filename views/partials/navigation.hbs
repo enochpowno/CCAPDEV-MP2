@@ -26,16 +26,21 @@
                 <li class="nav-item nav-link"><a class="nav-link {{#if active.movies}}active{{/if}}" href="/movies#search">Movies</a>
                 </li>
                 {{#if user}}
-                <li class="nav-item nav-link">
-                    <a class="nav-link {{#if active.profile}}active{{/if}}" href="/profile">
-                        <img src="{{img user.photo}}" height="30px" width="30px" style="border-radius: 15px; background-color: #fff; border: 3px solid #fff;" alt=""> &nbsp;
-                        Profile
-                    </a>
-                </li>
+                    {{#if user.type '==' 'admin'}}
+                        <li class="nav-item nav-link"><a class="nav-link {{#if active.admin}}active{{/if}}" href="/admin">Admin</a></li>
+                    {{else}}
+                        <li class="nav-item nav-link">
+                            <a class="nav-link {{#if active.profile}}active{{/if}}" href="/profile">
+                                <img src="{{img user.photo}}" height="30px" width="30px"
+                                    style="border-radius: 15px; background-color: #fff; border: 3px solid #fff;" alt=""> &nbsp;
+                                Profile
+                            </a>
+                        </li>
+                    {{/if}}
                 <li class="nav-item nav-link"><a class="nav-link text-white bg-danger text-white" href="/logout">Log Out</a></li>
                 {{else}}
-                <li class="nav-item nav-link"><a class="nav-link {{#if active.movies}}login{{/if}}" href="/login">Log In</a></li>
-                <li class="nav-item nav-link"><a class="nav-link {{#if active.movies}}register{{/if}}" href="/register">Register</a></li>
+                <li class="nav-item nav-link"><a class="nav-link {{#if active.movies}}active{{/if}}" href="/login">Log In</a></li>
+                <li class="nav-item nav-link"><a class="nav-link {{#if active.movies}}active{{/if}}" href="/register">Register</a></li>
                 {{/if}}
             </ul>
         </div>

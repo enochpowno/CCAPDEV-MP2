@@ -29,6 +29,11 @@ const userSchema = new mongoose.Schema({
     reviews: {
         type: Array,
         default: () => []
+    },
+
+    type: {
+        type: String,
+        default: () => 'client'
     }
 })
 
