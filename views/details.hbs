@@ -23,7 +23,43 @@
             </div>
         </div>
     </div>
-    <h1 class="display-8 px-5">Reviews</h1>
+    <h1 class="display-8 px-5" id="reviews">Reviews</h1>
+    {{#if user}}
+        {{#iff user.type '==' 'client'}}
+            <form action="/movies/review/add" method="POST" class="card">
+                <h5 class="card-header">Add a Review</h5>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 p-3">
+                            <label for="title" class="form-label">Review Title</label>
+                            <input required type="text" class="form-control" id="title" name="title"
+                                placeholder="Enter the review title here...">
+                        </div>
+                    </div>
+            
+                    <div class="row">
+                        <div class="col-md-12 p-3">
+                            <label for="synopsis">Review Content</label>
+                            <div class="form-floating">
+                                <textarea required class="form-control" placeholder="Leave a comment here" id="review"
+                                    name="review" style="height: 100px"></textarea>
+                                <label for="review">Enter the movie review here...</label>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input type="hidden" name="movie_id" value="{{result._id}}">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <br/>
+        {{/iff}}
+    {{/if}}
+
     {{#each reviews}}
         <div class="row review-row px-5 py-5">
             <b class="display-6">{{this.title}}</b>

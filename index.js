@@ -73,6 +73,10 @@ hbs.registerHelper('img', function (string) {
     }
 })
 
+hbs.registerHelper('datePrint', function (v1, options) {
+    return v1.toLocaleDateString('en-US',  {year: 'numeric', month: '2-digit', day: '2-digit' })
+})
+
 // setup express server
 app.use(bodyParser.urlencoded({ extended: false }))
 

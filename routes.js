@@ -193,6 +193,73 @@ module.exports = (function() {
         }
     })
 
+    route.post('/movies/review/add', (req, res) => {
+        const newReview = new Review({
+            review: req.body.review,
+            title: req.body.title,
+            movie_id: req.body.movie_id,
+            user_id: req.session.user._id,
+            username: req.session.user.username
+        });
+
+        newReview.save(function(err, newReview) {
+            if (err) {
+                req.session.message = {
+                    classes: 'text-white bg-danger',
+                    message: 'Oops! Something went wrong while trying to create your review...'
+                }
+
+                res.redirect(`/movies/details?id=${req.body.movie_id}`)
+            } else {
+                Users.updateOne({ _id: req.session.user._id}, { $push: { reviews: newReview._id } })
+                .then((doc) => {
+                    
+                    Movie.updateOne({ _id: req.body.movie_id}, { $push: { reviews: newReview._id } })
+                    .then((doc) => {
+                        
+                        req.session.message = {
+                            classes: 'text-white bg-success',
+                            message: 'Yay! your review was uploaded...'
+                        }
+
+                        res.redirect(`/movies/details?id=${req.body.movie_id}#reviews`)
+                    })
+                })
+            }
+
+        })
+    })
+
+    route.post('/movies/review/comment', (req, res) => {
+        const newComment = new Comment({
+            comment: req.body.comment,
+            review_id: req.body.review_id,
+            user_id: req.session.user._id,
+            username: req.session.user.username
+        });
+
+        newComment.save(function (err, newComment) {
+            if (err) {
+                req.session.message = {
+                    classes: 'text-white bg-danger',
+                    message: 'Ohno! your comment wasn\'t uploaded...'
+                }
+
+                res.redirect('back')
+            } else {
+                Review.findByIdAndUpdate({ _id: req.body.review_id }, { $push: { comments: newComment._id } })
+                .then((doc) => {
+                    req.session.message = {
+                        classes: 'text-white bg-success',
+                        message: 'Yay! your comment was uploaded...'
+                    }
+
+                    res.redirect(`/movies/review?id=${req.body.review_id}&movie=${doc.movie_id}#comments`)
+                })
+            }
+        })
+    })
+
     route.get('/login', (req, res) => {
         let message = null
         if (req.session.message) {
@@ -499,6 +566,6 @@ module.exports = (function() {
             })
         })
     })
-
+    
     return route;
 })()

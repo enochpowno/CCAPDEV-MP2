@@ -29,13 +29,41 @@
         <p>{{review.review}}</p>
     </div>
     <hr/>
-    <b>Comments:</b>
+    <b id="comments">Comments:</b>
+        {{#if user}}
+        {{#iff user.type '==' 'client'}}
+        <form action="/movies/review/comment" method="POST" class="card">
+            <h5 class="card-header">Leave a Comment</h5>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 p-3">
+                        <label for="synopsis">Comment</label>
+                        <div class="form-floating">
+                            <textarea required class="form-control" placeholder="Leave a comment here" id="comment" name="comment"
+                                style="height: 100px"></textarea>
+                            <label for="comment">Enter your comment here...</label>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="hidden" name="review_id" value="{{review._id}}">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <br />
+        {{/iff}}
+    {{/if}}
+
     {{#each comments}}
         <div class="row py-2">
             <div class="col-md-8">
                 <div class="row">
                     <div class="col-md-12">
-                        <a href="/profile?id={{this.user_id}}">{{username}}</a>
+                        <a href="/profile?id={{this.user_id}}">{{username}}</a> | <b>{{datePrint this.date}}</b>
                     </div>
                 </div>
                 <div class="row">
