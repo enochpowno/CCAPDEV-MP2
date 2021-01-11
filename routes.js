@@ -18,12 +18,20 @@ module.exports = (function() {
     route.use('/', (req, res, next) => {
         if (!req.session.user) {
             if (req.cookies["user"]) {
-                req.session.user = req.cookies["user"]
+                Users.findById(req.cookies["user"]).lean().then((doc) => {
+                    if (doc) {
+                        delete doc.reviews
+                        req.session.user = doc
+                    }
+
+                    next()
+                })
+            } else {
+                next()
             }
+        } else {
+            next()
         }
-
-
-        next()
     })
 
     route.get('/', (req, res) => {
@@ -149,6 +157,7 @@ module.exports = (function() {
                             Comment.find({ '_id': {$in: review.comments} }, {}, {'sort': {'date': -1}}).lean().exec(function (err, comments) {
                                 console.log(comments)
                                 res.render('reviews', {
+                                    title: `Movie Review - ${movie.title} Details`,
                                     layout: 'default',
                                     active: { movies: true  },
                                     movie: movie,
@@ -213,7 +222,7 @@ module.exports = (function() {
                 }else{
                     if (doc.password === req.body.password) { 
                         if (req.body.cookie) {
-                            res.cookie('user', doc, {
+                            res.cookie('user', doc._id, {
                                 maxAge: 1000 * 60 * 60 * 24 * 7 * 3, // 3 weeks
                                 httpOnly: false
                             })
@@ -391,5 +400,6 @@ module.exports = (function() {
         }
     })
 
+    
     return route;
 })()

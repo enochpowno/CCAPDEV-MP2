@@ -77,10 +77,7 @@ hbs.registerHelper('img', function (string) {
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // MS * S * M * H * D
-app.use(cookieParser('movieMetroSecret', {
-    maxAge: 1000 * 60 * 60 * 24 * 7 * 3, // 3 weeks
-    httpOnly: false
-}))
+app.use(cookieParser())
 
 app.use(expressSession({
     secret: 'movieMetroSecret',
