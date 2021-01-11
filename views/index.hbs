@@ -1,0 +1,31 @@
+<section class="bg-dark text-center">
+    <div class="container" id="topMovie">
+        <h1 class="display-6 font-weight-bold">Top Movie</h1>
+        <div class="my-5">
+            <h4 style="text-transform: capitalize;">{{top.title}}</h4>
+
+            <a href="/movies/details?id={{top._id}}#movieDetails">
+                <img src="{{img top.poster}}" width="400px" height="auto">
+            </a>
+        </div>
+    </div>
+</section>
+<section>
+    <div class="container" id="recentMovies">
+        <h1 class="display-6 font-weight-bold">Recent Movies</h1>
+    
+        {{#each results}}
+        <div class="row movie-row">
+            <div class="col-md-3 my-5">
+                <img src="{{img this.poster}}" alt="" height="auto" width="100%">
+            </div>
+            <div class="col-md-9 my-5">
+                <a href="/movies/details?id={{this._id}}#movieDetails">
+                    <h4 style="text-transform: capitalize;">{{this.title}}</h4>
+                </a>
+                <p><i>{{this.synopsis}}</i></p>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</section>
