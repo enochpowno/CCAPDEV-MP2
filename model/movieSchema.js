@@ -38,12 +38,12 @@ const movieSchema = new mongoose.Schema({
 
     reviews: {
         type: Array,
-        default: () => []
+        default: []
     },
     
     date: {
         type: Date,
-        default: () => Date.now
+        default: Date.now
     }
 })
 

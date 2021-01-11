@@ -28,12 +28,12 @@ const reviewSchema = new mongoose.Schema({
 
     comments: {
         type: Array,
-        default: () => []
+        default: []
     },
 
     date: {
         type: Date,
-        default: () => new Date()
+        default: Date.now
     }
 })
 

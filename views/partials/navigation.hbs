@@ -26,7 +26,7 @@
                 <li class="nav-item nav-link"><a class="nav-link {{#if active.movies}}active{{/if}}" href="/movies#search">Movies</a>
                 </li>
                 {{#if user}}
-                    {{#if user.type '==' 'admin'}}
+                    {{#iff user.type '==' 'admin'}}
                         <li class="nav-item nav-link"><a class="nav-link {{#if active.admin}}active{{/if}}" href="/admin">Admin</a></li>
                     {{else}}
                         <li class="nav-item nav-link">
@@ -36,7 +36,7 @@
                                 Profile
                             </a>
                         </li>
-                    {{/if}}
+                    {{/iff}}
                 <li class="nav-item nav-link"><a class="nav-link text-white bg-danger text-white" href="/logout">Log Out</a></li>
                 {{else}}
                 <li class="nav-item nav-link"><a class="nav-link {{#if active.movies}}active{{/if}}" href="/login">Log In</a></li>

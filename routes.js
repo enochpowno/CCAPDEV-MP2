@@ -12,6 +12,9 @@ const Users = mongoose.model('user', userSchema, 'user')
 const commentSchema = require('./model/commentSchema.js')
 const Comment = mongoose.model('comment', commentSchema, 'comment')
 
+const multer = require('multer')
+const up = multer({})
+
 module.exports = (function() {
     const route = require('express').Router()
 
@@ -101,7 +104,7 @@ module.exports = (function() {
                 style: ['movies'],
                 script: ['movies'],
                 results: null,
-            user: req.session.user
+                user: req.session.user
             })
         }
     })
@@ -400,6 +403,78 @@ module.exports = (function() {
         }
     })
 
-    
+    route.get('/admin', (req, res) => {
+        let message = null
+
+        if (req.session.message) {
+            message = {...req.session.message}
+            delete req.session.message
+        }
+        
+        Movie.find({}).sort({date: -1}).lean().exec(function (err, movies) {
+            let limit = 15
+            let maxPages = Math.ceil(movies.length / limit)
+            let page = parseInt(req.query.page) || 1
+            
+            res.render('admin', {
+                title: 'Movie Metro - Admin',
+                layout: 'account',
+                active: { admin: true  },
+                maxPages,
+                page,
+                movies: (movies.length == 0) ? movies : movies.slice((page - 1) * limit, page * limit),
+                user: req.session.user,
+                message
+            })
+        })
+    })
+
+    route.post('/admin/add', up.single('photo'), (req, res) => {
+        const newMovie = new Movie({
+            title: req.body.title,
+            synopsis: req.body.synopsis,
+            price: req.body.price,
+            upvote: 0,
+            downvote: 0,
+            status: 'available',
+            poster: req.file.buffer
+        });
+
+        newMovie.save(function (err, newMovie) {
+            console.log(err)
+            if (err) {
+                req.session.message = {
+                    classes: 'text-white bg-danger',
+                    message: `An error occured while adding the move: ${req.body.title}`
+                }
+            } else {
+                req.session.message = {
+                    classes: 'text-white bg-success',
+                    message: `The movie: ${req.body.title} was added to the database...`
+                }
+            }
+
+            res.redirect('/admin')
+        })
+    })
+
+    route.post('/admin/delete', (req, res) => {
+        Movie.findByIdAndDelete(req.body.id).lean().then((doc) => {
+            if (doc) {
+                req.session.message = {
+                    classes: 'text-white bg-success',
+                    message: `Succesfully deleted "${doc.title}" from the database...`
+                }
+            } else {
+                req.session.message = {
+                    classes: 'text-white bg-danger',
+                    message: `Can't deleted "${doc.title}" from the database...`
+                }
+            }
+
+            res.redirect('/admin')
+        })
+    })
+
     return route;
 })()
