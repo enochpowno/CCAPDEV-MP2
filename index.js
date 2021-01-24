@@ -62,11 +62,14 @@ hbs.registerHelper('img', function (string) {
     if (regexp.test(string)) {
         return string;
     } else {
-        let string0 = string.buffer
-        if (!string0) {
-            string0 = string
-        } else {
-            string0 = string0.toString('base64')
+        let string0 = string
+
+        if (string.buffer) {
+            string0 = string.toString('base64')
+        } else if (string.photo) {
+            string0 = string.photo.buffer.toString('base64')
+        } else if (string.poster) {
+            string0 = string.poster.buffer.toString('base64')
         }
 
         return `data:image/png;base64,${string0}`

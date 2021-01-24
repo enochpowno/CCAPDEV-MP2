@@ -158,11 +158,11 @@ module.exports = (function() {
                     Review.findOne({ '_id' : req.query.id}).lean().exec(function (err, review) {
                         if (review) {
                             Comment.find({ '_id': {$in: review.comments} }, {}, {'sort': {'date': -1}}).lean().exec(function (err, comments) {
-                                console.log(comments)
                                 res.render('reviews', {
                                     title: `Movie Review - ${movie.title} Details`,
                                     layout: 'default',
                                     active: { movies: true  },
+                                    script: ['review'],
                                     movie: movie,
                                     review: review,
                                     comments: comments,
@@ -230,6 +230,18 @@ module.exports = (function() {
         })
     })
 
+    route.get('/movies/review/comment', (req, res) => {
+        Comment.find({'review_id': req.query.id}).then((comments) => {
+            res.send(comments.reduce((prev, comment) => {
+                comment['is_owner'] = req.session.user && req.session.user == comment.user_id
+
+                prev.push(comment)
+
+                return prev
+            }, []))
+        })
+    })
+
     route.post('/movies/review/comment', (req, res) => {
         const newComment = new Comment({
             comment: req.body.comment,
@@ -258,6 +270,109 @@ module.exports = (function() {
                 })
             }
         })
+    })
+
+    route.get('/movies/review/comment/:id', (req, res) => {
+
+        Comment.findById(req.params.id).lean().exec(function(err, comment) {
+            if (!err) {
+                Comment.find({ '_id': {$in: comment.replies} }, {}, {'sort': {'date': -1}}).lean().exec(function (err0, replies) {
+                    res.send({
+                        success: (replies) ? true : false,
+                        replies: replies.reduce((prev, comment0) => {
+                            comment0['is_owner'] = req.session.user && req.session.user._id == comment0.user_id
+
+                            prev.push(comment0)
+                            return prev
+                        }, [])
+                    })
+                })
+            } else {
+                res.send({
+                    success: false,
+                    replies: null
+                })
+            }
+        })
+        
+    })
+
+    route.post('/movies/review/comment/delete', (req, res) => {
+        Comment.findOneAndDelete({'_id': req.body.id, 'user_id': req.session.user._id}).lean().then((comment) => {
+            if (comment) {
+                Comment.deleteMany({'_id': { $in: comment.replies }}).then(() => {
+                    res.send({
+                        success: (comment) ? true : false,
+                        comment: comment
+                    })
+                })
+            }
+        })
+    })
+
+    route.post('/movies/review/comment/reply', (req, res) => {
+        Comment.findById({'_id': req.body.id}).lean().then((comment0) => {
+            if (comment0) {
+                let comment1 = new Comment({
+                    user_id: req.session.user._id,
+                    comment: req.body.comment,
+                    username: req.session.user.username,
+                    review_id: null,
+                })
+
+                comment1.save(function (err, comment2) {
+                    if (!err) {
+                        Comment.updateOne({'_id': req.body.id}, { $push: { replies: comment2._id.toString()}})
+                        .then(() => {
+                            res.send({
+                                success: true,
+                                comment: comment2
+                            })
+                        })
+                    } else {
+                        res.send({
+                            success: false,
+                            comment: null
+                        })
+                    }
+                })
+            } else {
+                res.send({
+                    success: false,
+                    comment: null
+                })
+            }        
+        })
+    })
+
+    route.get('/movies/review/delete', (req, res) => {
+        if (req.query.movie && req.query.id) {
+            Review.findOneAndDelete({'_id': req.query.id, 'movie_id': req.query.movie}).lean().then((review) => {
+                let reviewPromises = []
+
+                reviewPromises.push(new Promise((resolve, reject) => {
+                    Comment.deleteMany({review_id: review._id.toString()}).then(() => {
+                        resolve()
+                    })
+                }))
+
+                reviewPromises.push(new Promise((resolve, reject) => {
+                    Users.updateMany({}, {
+                        $pull: {
+                            reviews: review._id.toString()
+                        }
+                    }).then(() => {
+                        resolve()
+                    })
+                }))
+
+                Promise.all(reviewPromises).then(() => {
+                    res.redirect('back')
+                })
+            })
+        } else {
+            res.redirect('back')
+        }
     })
 
     route.get('/login', (req, res) => {
@@ -351,7 +466,7 @@ module.exports = (function() {
         })
     })
 
-    route.post('/register', (req, res) => {
+    route.post('/register', up.single('photo'), (req, res) => {
         if (req.body.username && req.body.password && req.body.email && req.body.name) {
             Users.findOne( { $or: [{
                 'username': req.body.username,
@@ -362,7 +477,8 @@ module.exports = (function() {
                         username: req.body.username,
                         password: req.body.password,
                         email: req.body.email,
-                        fullname: req.body.name
+                        fullname: req.body.name,
+                        photo: req.file.buffer
                     });
 
                     newUser.save(function (err, user) {
@@ -508,7 +624,6 @@ module.exports = (function() {
         });
 
         newMovie.save(function (err, newMovie) {
-            console.log(err)
             if (err) {
                 req.session.message = {
                     classes: 'text-white bg-danger',
@@ -539,10 +654,10 @@ module.exports = (function() {
                 }
             }
 
-            Review.find({movie_id: doc._id.toString()}).lean().then((docs) => {
+            Review.findByIdAndDelete({movie_id: doc._id.toString()}).lean().then((review) => {
                 let reviewPromises = []
 
-                docs.forEach(doc => {
+                review.forEach(doc => {
                     reviewPromises.push(new Promise((resolve, reject) => {
                         Comment.deleteMany({review_id: doc._id.toString()}).then(() => {
                             resolve()

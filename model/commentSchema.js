@@ -11,14 +11,18 @@ const commentSchema = new mongoose.Schema({
         required: [true, 'Comment is required']
     },
     
+    replies: {
+        type: Array,
+        default: [String]
+    },
+    
     user_id: {
         type: String,
         required: [true, 'User ID is required']
     },
 
     review_id: {
-        type: String,
-        required: [true, 'Review ID is required']
+        type: String
     },
 
     date: {

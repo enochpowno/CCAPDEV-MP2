@@ -26,7 +26,7 @@
     <h1 class="display-8 px-5" id="reviews">Reviews</h1>
     {{#if user}}
         {{#iff user.type '==' 'client'}}
-            <form action="/movies/review/add" method="POST" class="card">
+            <form action="/movies/review/add" method="POST" class="card mx-5">
                 <h5 class="card-header">Add a Review</h5>
                 <div class="card-body">
                     <div class="row">
@@ -61,12 +61,22 @@
     {{/if}}
 
     {{#each reviews}}
-        <div class="row review-row px-5 py-5">
+        <div class="row review-row px-5">
             <b class="display-6">{{this.title}}</b>
             <p>by: <a href="/profile?id={{this.user_id}}">{{this.username}}</a></p>
             <p>{{this.review}}</p>
+        </div>
 
-            <a href="/movies/review?id={{this._id}}&movie={{../result._id}}#review">View comments</a>
+        <div class="row px-5">
+            <div class="col-md-12">
+                <a href="/movies/review?id={{this._id}}&movie={{../result._id}}#review">View comments</a>
+                
+                {{#iff ../user._id '==' this.user_id}}
+                    <a class="ms-3 btn btn-danger btn-sm" href="/movies/review/delete?id={{this._id}}&movie={{../result._id}}">Delete Review</a>
+                {{/iff}}
+            </div>
+
+            <hr class="my-2">
         </div>
     {{else}}
         <b class="display-6 px-5">There aren't any reviews here yet...</b>

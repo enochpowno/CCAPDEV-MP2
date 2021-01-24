@@ -23,16 +23,24 @@
             </div>
         </div>
     </div>
-    <div class="row review-row px-5 p-3" id="review">
+    <div class="row review-row mx-5 p-3" id="review">
         <b class="display-6">{{review.title}}</b>
         <p>by: <a href="/profile?id={{review.user_id}}">{{review.username}}</a></p>
         <p>{{review.review}}</p>
+    </div>
+    <div class="row mx-5">
+        <div class="col-md-12 py-2">
+            {{#iff user._id '==' review.user_id}}
+            <a class="btn btn-danger btn-sm"
+                href="/movies/review/delete?id={{review._id}}&movie={{movie._id}}">Delete Review</a>
+            {{/iff}}
+        </div>
     </div>
     <hr/>
     <b id="comments">Comments:</b>
         {{#if user}}
         {{#iff user.type '==' 'client'}}
-        <form action="/movies/review/comment" method="POST" class="card">
+        <form action="/movies/review/comment" method="POST" class="mx-5 mt-2 card">
             <h5 class="card-header">Leave a Comment</h5>
             <div class="card-body">
                 <div class="row">
@@ -59,18 +67,38 @@
     {{/if}}
 
     {{#each comments}}
-        <div class="row py-2">
-            <div class="col-md-8">
+        <div class="row py-2 mx-5 comment" data-id="{{this._id}}">
+            <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-12">
                         <a href="/profile?id={{this.user_id}}">{{username}}</a> | <b>{{datePrint this.date}}</b>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 px-5">
+                    <div class="col-md-12 px-3">
                         {{comment}}
                     </div>
                 </div>
+                <div class="row">
+                    {{#if ../user}}
+                        <div class="col-md-12 px-3">
+                            <textarea id="c{{_id}}" class="form-control add-reply" rows="1"
+                                placeholder="Press enter to leave a reply..."></textarea>
+                        </div>
+                    {{/if}}
+                    <div class="col-md-12 px-3 mt-2">
+                        {{#if replies}}
+                            <a href="#" class="view-replies">View Replies</a>
+                        {{/if}}
+
+                        {{#iff this.user_id '==' ../user._id}}
+                            <a class="btn btn-danger btn-sm delete-comment " href="#">Delete Comment</a>
+                        {{/iff}}
+                    </div>
+                </div>
+                {{#if replies}}
+                    <div class="row ms-1" id="r{{_id}}"></div>
+                {{/if}}
             </div>
         </div>
     {{/each}}

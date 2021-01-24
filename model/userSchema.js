@@ -22,13 +22,13 @@ const userSchema = new mongoose.Schema({
     },
 
     photo: {
-        data: Buffer,
-        contentType: String
+        type: Buffer,
+        required: [true, 'Profile photo is required']
     },
 
     reviews: {
         type: Array,
-        default: []
+        default: [String]
     },
 
     type: {
