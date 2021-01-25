@@ -1,9 +1,3 @@
-const AccountController = require('./AccountController');
-const MovieController = require('./MovieController');
-const CommentController = require('./CommentController');
-
-module.exports = {
-  AccountController,
-  CommentController,
-  MovieController,
-};
+export const AccountController = require('./AccountController');
+export const MovieController = require('./MovieController');
+export const CommentController = require('./CommentController');
