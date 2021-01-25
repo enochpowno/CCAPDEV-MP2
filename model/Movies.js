@@ -1,6 +1,6 @@
 const Mongoose = require('mongoose');
 
-module.exports = new Mongoose.Schema({
+module.exports = Mongoose.model('Movies', new Mongoose.Schema({
   title: {
     type: String,
     required: [true, 'The movie title is required'],
@@ -47,4 +47,4 @@ module.exports = new Mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}));

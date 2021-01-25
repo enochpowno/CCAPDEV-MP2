@@ -1,6 +1,6 @@
 const Mongoose = require('mongoose');
 
-module.exports = new Mongoose.Schema({
+module.exports = Mongoose.model('Comments', new Mongoose.Schema({
   user: {
     type: Mongoose.SchemaTypes.ObjectId,
     ref: 'Users',
@@ -24,4 +24,4 @@ module.exports = new Mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}));

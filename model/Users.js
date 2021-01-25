@@ -1,6 +1,6 @@
 const Mongoose = require('mongoose');
 
-module.exports = new Mongoose.Schema({
+module.exports = Mongoose.model('Users', new Mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Your full name is required.'],
@@ -38,4 +38,4 @@ module.exports = new Mongoose.Schema({
     type: Boolean,
     default: false,
   },
-});
+}));
