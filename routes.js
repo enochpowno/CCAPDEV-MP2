@@ -552,7 +552,7 @@ module.exports = (function() {
 
                     Movie.find({ '_id': {$in: movieIds} }).lean().then((movies) => {
                         let reviews0 = reviews.reduce((accum, curr) => {
-                            for(i = 0; i < movies.length; i++) {
+                            for(let i = 0; i < movies.length; i++) {
                                 if (movies[i]._id == curr.movie_id) {
                                     accum.push({
                                         review: curr,
