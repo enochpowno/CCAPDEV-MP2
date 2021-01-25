@@ -1,6 +1,6 @@
-const Mongoose = require('mongoose');
+import { model, Schema, SchemaTypes } from 'mongoose';
 
-module.exports = Mongoose.model('Movies', new Mongoose.Schema({
+export default model('Movies', new Schema({
   title: {
     type: String,
     required: [true, 'The movie title is required'],
@@ -40,7 +40,7 @@ module.exports = Mongoose.model('Movies', new Mongoose.Schema({
   },
 
   reviews: [
-    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Reviews' },
+    { type: SchemaTypes.ObjectId, ref: 'Reviews' },
   ],
 
   date: {

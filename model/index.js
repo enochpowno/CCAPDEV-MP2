@@ -1,9 +1,9 @@
-const Comments = require('./Comments');
-const Movies = require('./Movies');
-const Reviews = require('./Reviews');
-const Users = require('./Users');
+import Comments from './Comments';
+import Movies from './Movies';
+import Reviews from './Reviews';
+import Users from './Users';
 
-module.exports = {
+export default {
   Comments,
   Movies,
   Reviews,

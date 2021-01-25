@@ -1,13 +1,13 @@
-const Mongoose = require('mongoose');
+import { model, Schema, SchemaTypes } from 'mongoose';
 
-module.exports = Mongoose.model('Comments', new Mongoose.Schema({
+export default model('Comments', new Schema({
   user: {
-    type: Mongoose.SchemaTypes.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'Users',
   },
 
   review: {
-    type: Mongoose.SchemaTypes.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'Reviews',
   },
 
@@ -17,7 +17,7 @@ module.exports = Mongoose.model('Comments', new Mongoose.Schema({
   },
 
   replies: [
-    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Comments' },
+    { type: SchemaTypes.ObjectId, ref: 'Comments' },
   ],
 
   date: {
