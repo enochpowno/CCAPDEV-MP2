@@ -7,7 +7,7 @@ export default class AccountController {
     return sha256.update(s).digest('hex')
   }
   
-  async get (filter, populate) {
+  async get ({filter, projection = {}, options = {}, populate = false}) {
     const ret = {
       success: false,
       result: null,
@@ -18,13 +18,13 @@ export default class AccountController {
     try {
       if (populate) {
         ret.result = await Users
-        .findOne(filter)
+        .find(filter, projection, options)
         .populate('reviews')
         .lean()
         .exec()
       } else {
         ret.result = await Users
-        .findOne(filter)
+        .find(filter, projection, options)
         .lean()
         .exec()
       }
@@ -37,42 +37,38 @@ export default class AccountController {
     return ret;
   }
   
-  async findReviews (username) {
-    return await this.get({username}, true).reviews
-  }
-  
   async register ({name, username, password, email, photo}) {
     const ret = {
       success: false,
       result: null,
       message: '',
       errors: []
-    }
+    };
     
-    const user = await this.get({username}, false)
+    const user = await this.get({filter: {username}}, false);
     
-    if (user) {
-      ret.errors.push('Oops! Looks like that username is already taken.')
-    } else {
+    if (user.result) {
       const account = new Users({
         name,
         username,
         email,
         photo,
         password: hash(password)
-      })
+      });
       
       try {
-        ret.result = await account.save()
-        ret.success = true
+        ret.result = await account.save();
+        ret.success = true;
       } catch (e) {
         Object.keys(e.errors).forEach(error => {
-          ret.errors.push(error.message)
+          ret.errors.push(error.message);
         });
       }
+    } else { 
+      ret.errors.push('Oops! Looks like that username is already taken.');
     }
 
-    return ret
+    return ret;
   }
   
   async login ({username, password}) {
@@ -81,17 +77,17 @@ export default class AccountController {
       result: null,
       message: '',
       errors: []
-    }
+    };
     
-    const account = await get({username: username, password: hash(password)})
+    const account = await get({filter: {username: username, password: hash(password)}});
     
-    if (account) {
-      ret.success = true
-      ret.result = account
+    if (account.result) {
+      ret.success = true;
+      ret.result = account.result;
     } else {
-      ret.errors.push(`Oops! We can't find any account with that username.`)
+      ret.errors.push(`Oops! We can't find any account with that username.`);
     }
     
-    return ret
+    return ret;
   }
 }
