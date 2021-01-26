@@ -1,59 +1,63 @@
-import { Movies } from '../model'
+import { Movies } from '../model';
+
 export default class MovieController {
-  
-  async get ({ filter, projection = {}, options = {}, populate = false, lean = true }) {
+  async get({
+    filter, projection = {}, options = {}, populate = false, lean = true,
+  }) {
     const ret = {
       success: false,
       results: null,
       message: '',
       errors: [],
-    }
-    
+    };
+
     try {
       if (populate) {
         ret.results = await Movies
-        .find(filter, projection, options)
-        .populate('reviews')
-        .lean(lean)
-        .exec()
+          .find(filter, projection, options)
+          .populate('reviews')
+          .lean(lean)
+          .exec();
       } else {
         ret.results = await Movies
-        .find(filter, projection, options)
-        .lean(lean)
-        .exec()
+          .find(filter, projection, options)
+          .lean(lean)
+          .exec();
       }
-      
-      ret.success = true
+
+      ret.success = true;
     } catch (err) {
-      ret.errors.push('Oops! Something went wrong while trying to find your movies.')
+      ret.errors.push('Oops! Something went wrong while trying to find your movies.');
     }
-    
+
     return ret;
   }
 
-  async paginate ({ filter, options = {} }) {
+  async paginate({ filter, options = {} }) {
     try {
       const result = await Movies.paginate(filter, options);
 
-      if (result.ok) {
+      if (result) {
         return {
           success: true,
           message: 'You successfully retrieved some movies!',
           errors: [],
-          results: [result]
-        }
+          results: result,
+        };
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
 
     return {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to retrieve movies!'],
-      results: []
-    }
+      results: [],
+    };
   }
 
-  async update ({ filter, updates, options = {} }) {
+  async update({ filter, updates, options = {} }) {
     try {
       const result = await Movies.updateMany(filter, updates, options);
 
@@ -62,8 +66,8 @@ export default class MovieController {
           success: true,
           message: 'You successfully updated that review!',
           errors: [],
-          results: [result]
-        }
+          results: [result],
+        };
       }
     } catch (e) {}
 
@@ -71,18 +75,20 @@ export default class MovieController {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to update that movie!'],
-      results: [result]
-    }
+      results: [result],
+    };
   }
 
-  async create ({ title, poster, synopsis, price, status }) {
+  async create({
+    title, poster, synopsis, price, status,
+  }) {
     const ret = {
       success: false,
       results: null,
       message: '',
-      errors: []
+      errors: [],
     };
-    
+
     const movie = new Movies({
       title,
       poster,
@@ -90,12 +96,12 @@ export default class MovieController {
       price,
       status,
     });
-    
+
     try {
       ret.result = await movie.save();
       ret.success = true;
     } catch (e) {
-      Object.keys(e.errors).forEach(error => {
+      Object.keys(e.errors).forEach((error) => {
         ret.errors.push(error.message);
       });
     }
@@ -103,19 +109,19 @@ export default class MovieController {
     return ret;
   }
 
-  async delete ({ filter, options = {} }) {
+  async delete({ filter, options = {} }) {
     try {
       const result = await Movies
-            .deleteMany(filter, options)
-            .exec();
+        .deleteMany(filter, options)
+        .exec();
 
       if (result.ok) {
         return {
           success: true,
           message: 'You successfully deleted that movie!',
           errors: [],
-          results: [result]
-        }
+          results: [result],
+        };
       }
     } catch (e) {}
 
@@ -123,8 +129,7 @@ export default class MovieController {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to delete that movie!'],
-      results: [result]
-    }
+      results: null,
+    };
   }
-  
 }

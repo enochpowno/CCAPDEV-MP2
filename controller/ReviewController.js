@@ -1,50 +1,51 @@
-import { Reviews } from "../model";
+import { Reviews } from '../model';
 
 export default class ReviewController {
-
-  async get ({ filter, projection = {}, options = {}, populate = false, lean = true }) {
+  async get({
+    filter, projection = {}, options = {}, populate = false, lean = true,
+  }) {
     const ret = {
       success: false,
       results: null,
       message: '',
       errors: [],
-    }
-    
+    };
+
     try {
       if (populate) {
         ret.results = await Reviews
-        .find(filter, projection, options)
-        .populate('comments')
-        .populate('movie')
-        .populate('user')
-        .lean(lean)
-        .exec()
+          .find(filter, projection, options)
+          .populate('comments')
+          .populate('movie')
+          .populate('user')
+          .lean(lean)
+          .exec();
       } else {
         ret.results = await Reviews
-        .find(filter, projection, options)
-        .lean(lean)
-        .exec()
+          .find(filter, projection, options)
+          .lean(lean)
+          .exec();
       }
-      
-      ret.success = true
+
+      ret.success = true;
     } catch (err) {
-      ret.errors.push('Oops! Something went wrong while trying to find your reviews.')
+      ret.errors.push('Oops! Something went wrong while trying to find your reviews.');
     }
-    
+
     return ret;
   }
 
-  async paginate ({ filter, options = {} }) {
+  async paginate({ filter, options = {} }) {
     try {
       const result = await Reviews.paginate(filter, options);
 
-      if (result.ok) {
+      if (result) {
         return {
           success: true,
           message: 'You successfully retrieved some reviews!',
           errors: [],
-          results: [result]
-        }
+          results: result,
+        };
       }
     } catch (e) {}
 
@@ -52,11 +53,11 @@ export default class ReviewController {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to retrieve reviews!'],
-      results: []
-    }
+      results: [],
+    };
   }
 
-  async update ({ filter, updates, options = {} }) {
+  async update({ filter, updates, options = {} }) {
     try {
       const result = await Reviews.updateMany(filter, updates, options);
 
@@ -65,8 +66,8 @@ export default class ReviewController {
           success: true,
           message: 'You successfully updated that review!',
           errors: [],
-          results: [result]
-        }
+          results: [result],
+        };
       }
     } catch (e) {}
 
@@ -74,30 +75,32 @@ export default class ReviewController {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to update that review!'],
-      results: [result]
-    }
+      results: [result],
+    };
   }
 
-  async create ({ title, content, movie, user }) {
+  async create({
+    title, content, movie, user,
+  }) {
     const ret = {
       success: false,
       results: null,
       message: '',
-      errors: []
+      errors: [],
     };
-    
+
     const review = new Reviews({
       title,
       content,
       movie,
       user,
     });
-    
+
     try {
       ret.result = await review.save();
       ret.success = true;
     } catch (e) {
-      Object.keys(e.errors).forEach(error => {
+      Object.keys(e.errors).forEach((error) => {
         ret.errors.push(error.message);
       });
     }
@@ -105,19 +108,19 @@ export default class ReviewController {
     return ret;
   }
 
-  async delete ({ filter, options = {} }) {
+  async delete({ filter, options = {} }) {
     try {
       const result = await Reviews
-            .deleteMany(filter, options)
-            .exec();
+        .deleteMany(filter, options)
+        .exec();
 
       if (result.ok) {
         return {
           success: true,
           message: 'You successfully deleted that review!',
           errors: [],
-          results: [result]
-        }
+          results: [result],
+        };
       }
     } catch (e) {}
 
@@ -125,7 +128,7 @@ export default class ReviewController {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to delete that review!'],
-      results: [result]
-    }
+      results: null,
+    };
   }
 }

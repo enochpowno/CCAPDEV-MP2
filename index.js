@@ -17,7 +17,7 @@ function connect() {
   mongoose.connection
     .on('error', console.log)
     .on('disconnected', connect)
-    .on('connected', () => console.log('Connected!'));
+    .on('connected', (db) => console.log('Connected!'));
 
   return mongoose.connect(databaseUrl, {
     keepAlive: 1,

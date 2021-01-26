@@ -1,5 +1,5 @@
 import Mongoose from 'mongoose';
-import MongoosePaginate from "mongoose-paginate-v2";
+import MongoosePaginate from 'mongoose-paginate-v2';
 
 const MovieSchema = new Mongoose.Schema({
   title: {
@@ -52,4 +52,4 @@ const MovieSchema = new Mongoose.Schema({
 
 MovieSchema.plugin(MongoosePaginate);
 
-export default Mongoose.model('Movies', MovieSchema, 'movies');
+export default Mongoose.model('movie', MovieSchema, 'movies');

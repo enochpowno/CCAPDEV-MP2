@@ -123,7 +123,7 @@ class AccountController {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to delete that user!'],
-      results: [],
+      results: null,
     };
   }
 }
