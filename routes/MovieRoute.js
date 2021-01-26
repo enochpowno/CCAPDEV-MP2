@@ -45,7 +45,7 @@ export default (function () {
     }
   });
 
-  route.put('/', (_req, _res) => {
+  route.put('/', up.single('poster'), (_req, _res) => {
     if (mustLogin(_req, true)) {
       if (_req.body.movie) {
         const updates = {};
@@ -53,6 +53,10 @@ export default (function () {
         Object.keys(_req.body).forEach((key, i, a) => {
           updates[key] = _req.body[key];
         });
+
+        if (_req.file) {
+          updates.poster = _req.file.buffer;
+        }
 
         MovieController.update({
           filter: { _id: _req.body.id },
