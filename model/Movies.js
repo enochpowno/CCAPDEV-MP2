@@ -52,4 +52,4 @@ const MovieSchema = new Schema({
 
 MovieSchema.plugin(MongoosePaginate);
 
-export default model('Movies', MovieSchema);
+export default model('Movies', MovieSchema, 'movies');

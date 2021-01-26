@@ -29,4 +29,4 @@ const CommentSchema = new Schema({
 
 CommentSchema.plugin(MongoosePaginate);
 
-export default model('Comments', CommentSchema);
+export default model('Comments', CommentSchema, 'comments');

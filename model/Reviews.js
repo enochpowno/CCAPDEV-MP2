@@ -34,4 +34,4 @@ const ReviewSchema = new Schema({
 
 ReviewSchema.plugin(MongoosePaginate);
 
-export default model('Reviews', ReviewSchema);
+export default model('Reviews', ReviewSchema, 'reviews');
