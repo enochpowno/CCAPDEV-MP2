@@ -1,14 +1,14 @@
-import { model, Schema, SchemaTypes } from 'mongoose';
-import { default as MongoosePaginate } from "mongoose-paginate-v2";
+import Mongoose from 'mongoose';
+import MongoosePaginate from 'mongoose-paginate-v2';
 
-const CommentSchema = new Schema({
+const CommentSchema = new Mongoose.Schema({
   user: {
-    type: SchemaTypes.ObjectId,
+    type: Mongoose.SchemaTypes.ObjectId,
     ref: 'Users',
   },
 
   review: {
-    type: SchemaTypes.ObjectId,
+    type: Mongoose.SchemaTypes.ObjectId,
     ref: 'Reviews',
   },
 
@@ -18,7 +18,7 @@ const CommentSchema = new Schema({
   },
 
   replies: [
-    { type: SchemaTypes.ObjectId, ref: 'Comments' },
+    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Comments' },
   ],
 
   date: {
@@ -29,4 +29,4 @@ const CommentSchema = new Schema({
 
 CommentSchema.plugin(MongoosePaginate);
 
-export default model('Comments', CommentSchema, 'comments');
+export default Mongoose.model('Comments', CommentSchema, 'comments');

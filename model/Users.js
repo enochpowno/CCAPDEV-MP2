@@ -1,7 +1,7 @@
-import { model, Schema, SchemaTypes } from 'mongoose';
-import { default as MongoosePaginate } from "mongoose-paginate-v2";
+import Mongoose from 'mongoose';
+import MongoosePaginate from 'mongoose-paginate-v2';
 
-const UserSchema = new Schema({
+const UserSchema = new Mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Your full name is required.'],
@@ -32,7 +32,7 @@ const UserSchema = new Schema({
   },
 
   reviews: [
-    { type: SchemaTypes.ObjectId, ref: 'Reviews'},
+    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Reviews'},
   ],
 
   admin: {
@@ -43,4 +43,4 @@ const UserSchema = new Schema({
 
 UserSchema.plugin(MongoosePaginate);
 
-export default model('Users', UserSchema, 'users');
+export default Mongoose.model('Users', UserSchema, 'users');

@@ -1,14 +1,14 @@
-import { model, Schema, SchemaTypes } from 'mongoose';
-import { default as MongoosePaginate } from "mongoose-paginate-v2";
+import Mongoose from 'mongoose';
+import MongoosePaginate from 'mongoose-paginate-v2';
 
-const ReviewSchema = new Schema({
+const ReviewSchema = new Mongoose.Schema({
   user: {
-    type: SchemaTypes.ObjectId,
+    type: Mongoose.SchemaTypes.ObjectId,
     ref: 'Users',
   },
 
   movie: {
-    type: SchemaTypes.ObjectId,
+    type: Mongoose.SchemaTypes.ObjectId,
     ref: 'Movies',
   },
 
@@ -23,7 +23,7 @@ const ReviewSchema = new Schema({
   },
 
   comments: [
-    { type: SchemaTypes.ObjectId, ref: 'Comments' },
+    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Comments' },
   ],
 
   date: {
@@ -34,4 +34,4 @@ const ReviewSchema = new Schema({
 
 ReviewSchema.plugin(MongoosePaginate);
 
-export default model('Reviews', ReviewSchema, 'reviews');
+export default Mongoose.model('Reviews', ReviewSchema, 'reviews');

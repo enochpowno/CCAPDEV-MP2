@@ -1,52 +1,56 @@
+import { createHash } from 'crypto';
 import { Users } from '../model';
-import { createHash } from "crypto";
 
-const sha256 = createHash('sha256')
-export default class AccountController {
+const sha256 = createHash('sha256');
+class AccountController {
   hash(s) {
     return sha256.update(s).digest('hex');
   }
-  
-  async get ({ filter, projection = {}, options = {}, populate = false, lean = true }) {
+
+  async get({
+    filter, projection = {}, options = {}, populate = false, lean = true,
+  }) {
     const ret = {
       success: false,
       results: null,
       message: '',
       errors: [],
     };
-    
+
     try {
       if (populate) {
         ret.results = await Users
-        .find(filter, projection, options)
-        .populate('reviews')
-        .lean(lean)
-        .exec();
+          .find(filter, projection, options)
+          .populate('reviews')
+          .lean(lean)
+          .exec();
       } else {
         ret.results = await Users
-        .find(filter, projection, options)
-        .lean(lean)
-        .exec();
+          .find(filter, projection, options)
+          .lean(lean)
+          .exec();
       }
-      
+
       ret.success = true;
     } catch (err) {
       ret.errors.push('Oops! Something went wrong while trying to find your account.');
     }
-    
+
     return ret;
   }
 
-  async create ({ name, username, password, email, photo }) {
+  async create({
+    name, username, password, email, photo,
+  }) {
     const ret = {
       success: false,
       results: null,
       message: '',
-      errors: []
+      errors: [],
     };
-    
-    const user = await this.get({filter: {username}}, false);
-    
+
+    const user = await this.get({ filter: { username } }, false);
+
     if (user.results) {
       if (user.results) {
         const account = new Users({
@@ -54,14 +58,14 @@ export default class AccountController {
           username,
           email,
           photo,
-          password: hash(password)
+          password: hash(password),
         });
-        
+
         try {
           ret.result = await account.save();
           ret.success = true;
         } catch (e) {
-          Object.keys(e.errors).forEach(error => {
+          Object.keys(e.errors).forEach((error) => {
             ret.errors.push(error.message);
           });
         }
@@ -69,49 +73,49 @@ export default class AccountController {
         ret.errors.push('Oops! Looks like that username is already taken.');
       }
     } else {
-      ret.errors.push(...user.errors); 
+      ret.errors.push(...user.errors);
     }
 
     return ret;
   }
-  
-  async login ({ username, password }) {
+
+  async login({ username, password }) {
     const ret = {
       success: false,
       results: null,
       message: '',
-      errors: []
+      errors: [],
     };
-    
-    const account = await get({filter: {username: username, password: hash(password)}});
-    
+
+    const account = await get({ filter: { username, password: hash(password) } });
+
     if (account.success) {
       if (account.result) {
         ret.success = true;
         ret.results = account.results[0];
       } else {
-        ret.errors.push(`Oops! We can't find any account with that username.`);
+        ret.errors.push('Oops! We can\'t find any account with that username.');
       }
     } else {
       ret.errors.push(...account.errors);
     }
-    
+
     return ret;
   }
 
-  async delete ({ filter, options = {} }) {
+  async delete({ filter, options = {} }) {
     try {
       const result = await Users
-            .deleteMany(filter, options)
-            .exec();
+        .deleteMany(filter, options)
+        .exec();
 
       if (result.ok) {
         return {
           success: true,
           message: 'You successfully deleted that user!',
           errors: [],
-          results: [result]
-        }
+          results: [result],
+        };
       }
     } catch (e) {}
 
@@ -119,8 +123,9 @@ export default class AccountController {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to delete that user!'],
-      results: [result]
-    }
+      results: [],
+    };
   }
-  
 }
+
+export default AccountController;

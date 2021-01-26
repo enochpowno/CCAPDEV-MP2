@@ -1,7 +1,7 @@
-import { model, Schema, SchemaTypes } from 'mongoose';
-import { default as MongoosePaginate } from "mongoose-paginate-v2";
+import Mongoose from 'mongoose';
+import MongoosePaginate from "mongoose-paginate-v2";
 
-const MovieSchema = new Schema({
+const MovieSchema = new Mongoose.Schema({
   title: {
     type: String,
     required: [true, 'The movie title is required'],
@@ -41,7 +41,7 @@ const MovieSchema = new Schema({
   },
 
   reviews: [
-    { type: SchemaTypes.ObjectId, ref: 'Reviews' },
+    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Reviews' },
   ],
 
   date: {
@@ -52,4 +52,4 @@ const MovieSchema = new Schema({
 
 MovieSchema.plugin(MongoosePaginate);
 
-export default model('Movies', MovieSchema, 'movies');
+export default Mongoose.model('Movies', MovieSchema, 'movies');

@@ -11,5 +11,11 @@
         "sourceType": "module"
     },
     "rules": {
-    },
+      "class-methods-use-this": "off",
+      "no-empty": "off",
+      "no-underscore-dangle": "off",
+      "no-param-reassign": "off",
+      "prefer-destructuring": "off",
+      "no-unused-vars": "off"
+    }
 }
