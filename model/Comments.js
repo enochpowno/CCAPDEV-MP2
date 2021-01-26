@@ -1,6 +1,7 @@
 import { model, Schema, SchemaTypes } from 'mongoose';
+import { default as MongoosePaginate } from "mongoose-paginate-v2";
 
-export default model('Comments', new Schema({
+const CommentSchema = new Schema({
   user: {
     type: SchemaTypes.ObjectId,
     ref: 'Users',
@@ -24,4 +25,8 @@ export default model('Comments', new Schema({
     type: Date,
     default: Date.now,
   },
-}));
+});
+
+CommentSchema.plugin(MongoosePaginate);
+
+export default model('Comments', CommentSchema);

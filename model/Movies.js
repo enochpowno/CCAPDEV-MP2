@@ -1,6 +1,7 @@
 import { model, Schema, SchemaTypes } from 'mongoose';
+import { default as MongoosePaginate } from "mongoose-paginate-v2";
 
-export default model('Movies', new Schema({
+const MovieSchema = new Schema({
   title: {
     type: String,
     required: [true, 'The movie title is required'],
@@ -47,4 +48,8 @@ export default model('Movies', new Schema({
     type: Date,
     default: Date.now,
   },
-}));
+});
+
+MovieSchema.plugin(MongoosePaginate);
+
+export default model('Movies', MovieSchema);

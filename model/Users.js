@@ -1,6 +1,7 @@
 import { model, Schema, SchemaTypes } from 'mongoose';
+import { default as MongoosePaginate } from "mongoose-paginate-v2";
 
-export default model('Users', new Schema({
+const UserSchema = new Schema({
   name: {
     type: String,
     required: [true, 'Your full name is required.'],
@@ -38,4 +39,8 @@ export default model('Users', new Schema({
     type: Boolean,
     default: false,
   },
-}));
+});
+
+UserSchema.plugin(MongoosePaginate);
+
+export default model('Users', UserSchema);
