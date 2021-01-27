@@ -75,7 +75,7 @@ export default class CommentController {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to update that comment!'],
-      results: [result],
+      results: null,
     };
   }
 

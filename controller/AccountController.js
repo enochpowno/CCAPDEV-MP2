@@ -103,6 +103,28 @@ class AccountController {
     return ret;
   }
 
+  async update({ filter, updates, options = {} }) {
+    try {
+      const result = await Users.updateMany(filter, updates, options);
+
+      if (result.ok) {
+        return {
+          success: true,
+          message: 'You successfully updated that review!',
+          errors: [],
+          results: [result],
+        };
+      }
+    } catch (e) {}
+
+    return {
+      success: false,
+      message: '',
+      errors: ['Something went wrong while trying to update that movie!'],
+      results: null,
+    };
+  }
+
   async delete({ filter, options = {} }) {
     try {
       const result = await Users

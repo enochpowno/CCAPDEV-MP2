@@ -75,7 +75,7 @@ export default class MovieController {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to update that movie!'],
-      results: [result],
+      results: null,
     };
   }
 

@@ -75,7 +75,7 @@ export default class ReviewController {
       success: false,
       message: '',
       errors: ['Something went wrong while trying to update that review!'],
-      results: [result],
+      results: null,
     };
   }
 
