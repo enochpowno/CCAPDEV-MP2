@@ -7,5 +7,3 @@ export const AccountController = new AC();
 export const MovieController = new MC();
 export const ReviewControlelr = new RC();
 export const CommentController = new CC();
-
-export const querify = (string) => new RegExp(string.trim().replace(/\s+/, ' ').split(' ').join('|'), 'i');

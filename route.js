@@ -39,6 +39,7 @@ export default (function () {
   route.use('/user', UserRoute);
   route.use('/movie', MovieRoute);
   route.use('/admin', AdminRoute);
+  route.use('/comment', CommentRoute);
 
   return route;
 }());

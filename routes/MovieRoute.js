@@ -1,7 +1,7 @@
 import multer from 'multer';
 import { Router } from 'express';
-import { MovieController, querify } from '../controller';
-import { mustLogin } from './index';
+import { MovieController } from '../controller';
+import { mustLogin, querify } from './helpers';
 
 const up = multer({});
 
