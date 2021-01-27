@@ -143,12 +143,14 @@ export default (function () {
       filter.title = querify(_req.query.q);
     }
 
-    paginationOptions.page = _req.query.page || 1;
-    paginationOptions.page = (paginationOptions.page <= 0) ? 1 : paginationOptions.page;
+    const pageOptClone = {
+      ...paginationOptions,
+      page: (_req.query.page && _req.query.page >= 1) ? parseInt(_req.query.page, 10) : 1,
+    };
 
     MovieController.paginate({
       filter,
-      options: paginationOptions,
+      options: pageOptClone,
     }).then((result) => _res.send(result));
   });
 
