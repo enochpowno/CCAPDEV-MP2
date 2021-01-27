@@ -79,7 +79,9 @@ export default class CommentController {
     };
   }
 
-  async create({ content, review, user }) {
+  async create({
+    content, review, user, replyTo,
+  }) {
     const ret = {
       success: false,
       results: null,
@@ -91,6 +93,7 @@ export default class CommentController {
       content,
       review,
       user,
+      replyTo,
     });
 
     try {

@@ -17,6 +17,11 @@ const CommentSchema = new Mongoose.Schema({
     required: [true, 'A comment is required.'],
   },
 
+  replyTo: {
+    type: Mongoose.SchemaTypes.ObjectId,
+    ref: 'Comments',
+  },
+
   replies: [
     { type: Mongoose.SchemaTypes.ObjectId, ref: 'Comments' },
   ],

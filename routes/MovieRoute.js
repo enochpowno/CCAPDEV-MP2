@@ -10,7 +10,7 @@ const paginationOptions = {
   page: 1,
   limit: 15,
   lean: true,
-  select: '-reviews -poster',
+  select: '-reviews',
 };
 
 export default (function () {
@@ -21,7 +21,7 @@ export default (function () {
       filter: {
         title: querify(_req.query.q),
       },
-      populate: true,
+      populate: false,
       lean: true,
     }).then((result) => _res.send(result));
   });
@@ -162,7 +162,7 @@ export default (function () {
   route.get('/view/:movie', (_req, _res) => {
     MovieController.get({
       filter: { _id: _req.params.movie },
-      projection: '-reviews -poster',
+      projection: '-reviews',
     }).then((result) => {
       if (!result.success) {
         _res.status(404).render('error/404', {

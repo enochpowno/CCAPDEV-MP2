@@ -78,7 +78,7 @@ export default (function () {
     }
   });
 
-  route.get('/login', (_req, _res) => {
+  route.get('/view/login', (_req, _res) => {
     if (!mustLogin(_req)) {
       _res.send('login', {
         layout: 'default',
@@ -120,7 +120,7 @@ export default (function () {
     }
   });
 
-  route.get('/register', (_req, _res) => {
+  route.get('/view/register', (_req, _res) => {
     if (!mustLogin(_req)) {
       _res.send('register', {
         layout: 'default',

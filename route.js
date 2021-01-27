@@ -1,7 +1,9 @@
 import multer from 'multer';
 import { Router } from 'express';
 import { AccountController } from './controller';
-import { AdminRoute, UserRoute, MovieRoute } from './routes';
+import {
+  AdminRoute, UserRoute, MovieRoute, CommentRoute,
+} from './routes';
 
 const up = multer({});
 
