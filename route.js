@@ -1,11 +1,8 @@
-import multer from 'multer';
 import { Router } from 'express';
 import { AccountController } from './controller';
 import {
-  AdminRoute, UserRoute, MovieRoute, CommentRoute,
+  AdminRoute, UserRoute, MovieRoute, CommentRoute, ReviewRoute,
 } from './routes';
-
-const up = multer({});
 
 export default (function () {
   const route = Router();
@@ -41,6 +38,7 @@ export default (function () {
   route.use('/user', UserRoute);
   route.use('/movie', MovieRoute);
   route.use('/admin', AdminRoute);
+  route.use('/review', ReviewRoute);
   route.use('/comment', CommentRoute);
 
   return route;
