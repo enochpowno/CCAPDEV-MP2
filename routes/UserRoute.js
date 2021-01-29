@@ -1,7 +1,7 @@
 import multer from 'multer';
 import { Router } from 'express';
 import { AccountController } from '../controller';
-import { mustLogin } from './index';
+import { mustLogin } from './helpers';
 
 const up = multer({});
 

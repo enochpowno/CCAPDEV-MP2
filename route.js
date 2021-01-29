@@ -35,11 +35,27 @@ export default (function () {
     }
   });
 
+  route.get('/', (_req, _res) => {
+    _res.render('index', {
+      layout: 'default',
+      active: { home: true },
+      title: 'Home Page',
+      user: _req.session.user,
+    });
+  });
+
   route.use('/user', UserRoute);
   route.use('/movie', MovieRoute);
   route.use('/admin', AdminRoute);
   route.use('/review', ReviewRoute);
   route.use('/comment', CommentRoute);
+
+  route.get('*', (_req, _res) => {
+    _res.render('error/404', {
+      layout: 'error',
+      title: '404 Error',
+    });
+  });
 
   return route;
 }());

@@ -13,18 +13,6 @@
         crossorigin="anonymous"></script>
     <script src="/js/script.js"></script>
 
-    {{#if message}}
-        <script>
-            var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-            var toastList = toastElList.map(function (toastEl) {
-                toast = new bootstrap.Toast(toastEl)
-                
-                toast.show()
-                return toast
-            })
-        </script>
-    {{/if}}
-
     {{#each script}}
         <script src="/js/{{this}}.js"></script>
     {{/each}}

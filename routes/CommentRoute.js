@@ -70,6 +70,38 @@ export default (function () {
     }
   });
 
+  route.put('/vote/:type', (_req, _res) => {
+    if (mustLogin(_req)) {
+      if (_req.body.comment) {
+        CommentController.update({
+          filter: {
+            _id: _req.body.comment,
+          },
+          updates: {
+            $inc: {
+              upvote: (_req.params.type === 'up') ? 1 : 0,
+              downvote: (_req.params.type === 'down') ? 1 : 0,
+            },
+          },
+        }).then((result) => _res.send(result));
+      } else {
+        _res.send({
+          success: false,
+          message: '',
+          results: null,
+          errors: ['Oops! We can\'t find the comment you\'re trying to rate'],
+        });
+      }
+    } else {
+      _res.send({
+        success: false,
+        message: '',
+        results: null,
+        errors: ['Uh oh! You must be logged in to do that'],
+      });
+    }
+  });
+
   route.get('/replies/:comment', (_req, _res) => {
     const pageOptClone = {
       ...paginationOptions,

@@ -166,7 +166,7 @@ export default (function () {
       filter: { _id: _req.params.movie },
       projection: '-reviews',
     }).then((result) => {
-      if (!result.success) {
+      if (!result.success && result.results.length > 0) {
         _res.status(404).render('error/404', {
           layout: 'error',
           user: _req.session.user,
@@ -176,6 +176,7 @@ export default (function () {
           layout: 'default',
           user: _req.session.usesr,
           active: { movie: true },
+          movie: result.results[0],
         });
       }
     });

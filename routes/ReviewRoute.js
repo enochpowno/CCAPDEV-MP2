@@ -93,5 +93,58 @@ export default (function () {
     }
   });
 
+  route.put('/vote/:type', (_req, _res) => {
+    if (mustLogin(_req)) {
+      if (_req.body.review) {
+        ReviewControlelr.update({
+          filter: {
+            _id: _req.body.review,
+          },
+          updates: {
+            $inc: {
+              upvote: (_req.params.type === 'up') ? 1 : 0,
+              downvote: (_req.params.type === 'down') ? 1 : 0,
+            },
+          },
+        }).then((result) => _res.send(result));
+      } else {
+        _res.send({
+          success: false,
+          message: '',
+          results: null,
+          errors: ['Oops! We can\'t find the review you\'re trying to rate'],
+        });
+      }
+    } else {
+      _res.send({
+        success: false,
+        message: '',
+        results: null,
+        errors: ['Uh oh! You must be logged in to do that'],
+      });
+    }
+  });
+
+  route.get('/view/:review', (_req, _res) => {
+    ReviewControlelr.get({
+      filter: { _id: _req.params.review },
+      projection: '-comments',
+    }).then((result) => {
+      if (!result.success && result.results.length > 0) {
+        _res.status(404).render('error/404', {
+          layout: 'error',
+          user: _req.session.user,
+        });
+      } else {
+        _res.render('review', {
+          layout: 'default',
+          user: _req.session.usesr,
+          active: { movie: true },
+          review: result.results[0],
+        });
+      }
+    });
+  });
+
   return route;
 }());

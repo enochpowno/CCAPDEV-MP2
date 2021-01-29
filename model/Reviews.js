@@ -12,6 +12,18 @@ const ReviewSchema = new Mongoose.Schema({
     ref: 'Movies',
   },
 
+  upvote: {
+    type: Number,
+    default: 0,
+    min: [0, 'Upvotes must be a positive number.'],
+  },
+
+  downvote: {
+    type: Number,
+    default: 0,
+    min: [0, 'Downvotes must be a positive number.'],
+  },
+
   title: {
     type: String,
     required: [true, 'The review title is required'],
