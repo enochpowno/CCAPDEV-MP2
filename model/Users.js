@@ -21,7 +21,7 @@ const UserSchema = new Mongoose.Schema({
     type: String,
     required: [true, 'Your email is required.'],
     validate: {
-      validator: (v) => /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(v),
+      validator: (v) => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v),
       message: (props) => `${props.value} is not a valid email address.`,
     },
   },
@@ -32,12 +32,17 @@ const UserSchema = new Mongoose.Schema({
   },
 
   reviews: [
-    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Reviews'},
+    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Reviews' },
   ],
 
   admin: {
     type: Boolean,
     default: false,
+  },
+
+  create_date: {
+    type: Date,
+    default: Date.now,
   },
 });
 

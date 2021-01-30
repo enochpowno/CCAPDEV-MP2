@@ -26,6 +26,36 @@ export default (function () {
     }).then((result) => _res.send(result));
   });
 
+  route.get('/top', (_req, _res) => {
+    MovieController.get({
+      filter: {},
+      options: {
+        sort: {
+          upvote: -1,
+          date: -1,
+        },
+        limit: (_req.query.limit) ? parseInt(_req.query.limit) : 1,
+        skip: (_req.query.skip) ? parseInt(_req.query.skip) : 0,
+      },
+      populate: false,
+      lean: true,
+    }).then((result) => _res.send(result));
+  });
+
+  route.get('/recent', (_req, _res) => {
+    MovieController.get({
+      filter: {},
+      options: {
+        sort: {
+          date: -1,
+        },
+        limit: 1,
+      },
+      populate: false,
+      lean: true,
+    }).then((result) => _res.send(result));
+  });
+
   route.post('/', up.single('poster'), (_req, _res) => {
     if (mustLogin(_req, true)) {
       MovieController.create({

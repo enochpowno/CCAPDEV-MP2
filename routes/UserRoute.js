@@ -1,7 +1,13 @@
 import multer from 'multer';
-import { Router } from 'express';
-import { AccountController } from '../controller';
-import { mustLogin } from './helpers';
+import {
+  Router,
+} from 'express';
+import {
+  AccountController,
+} from '../controller';
+import {
+  mustLogin,
+} from './helpers';
 
 const up = multer({});
 
@@ -33,7 +39,9 @@ export default (function () {
       });
 
       AccountController.update({
-        filter: { _id: _req.session.user._id },
+        filter: {
+          _id: _req.session.user._id,
+        },
         updates,
       }).then((result) => _res.send(result));
     } else {
@@ -46,43 +54,13 @@ export default (function () {
     }
   });
 
-  route.get('/view/:user', (_req, _res) => {
-    if (_req.params.user == _req.session._id) {
-      _res.send('user', {
-        layout: 'default',
-        active: { profile: true },
-        user: _req.session.user,
-        profile: _req.session.user,
-        title: _req.session.name,
-      });
-    } else {
-      AccountController.get({
-        filter: { _id: _req.params.user },
-        projection: '-reviews',
-        lean: true,
-      }).then((result) => {
-        if (result.success) {
-          _res.send('user', {
-            layout: 'default',
-            user: _req.session.user,
-            profile: result.results[0],
-            title: result.results[0],
-          });
-        } else {
-          _res.status(404).render('error/404', {
-            layout: 'error',
-            user: _req.session.user,
-          });
-        }
-      });
-    }
-  });
-
   route.get('/view/login', (_req, _res) => {
     if (!mustLogin(_req)) {
-      _res.send('login', {
+      _res.render('login', {
         layout: 'default',
-        active: { login: true },
+        active: {
+          login: true,
+        },
         title: 'Login',
       });
     } else {
@@ -95,7 +73,10 @@ export default (function () {
 
   route.post('/login', (_req, _res) => {
     if (!mustLogin(_req) && _req.body.username && _req.body.password) {
-      AccountController.login({ username: _req.body.username, password: _req.body.password })
+      AccountController.login({
+        username: _req.body.username,
+        password: _req.body.password,
+      })
         .then((result) => {
           if (result.success && result.results) {
             _req.session.user = result.results[0];
@@ -122,9 +103,11 @@ export default (function () {
 
   route.get('/view/register', (_req, _res) => {
     if (!mustLogin(_req)) {
-      _res.send('register', {
+      _res.render('register', {
         layout: 'default',
-        active: { register: true },
+        active: {
+          register: true,
+        },
         title: 'Registration',
       });
     } else {
@@ -163,5 +146,40 @@ export default (function () {
     _res.redirect('/');
   });
 
+  route.get('/view/:user', (_req, _res) => {
+    if (_req.params.user == _req.session._id) {
+      _res.send('user', {
+        layout: 'default',
+        active: {
+          profile: true,
+        },
+        user: _req.session.user,
+        profile: _req.session.user,
+        title: _req.session.name,
+      });
+    } else {
+      AccountController.get({
+        filter: {
+          _id: _req.params.user,
+        },
+        projection: '-reviews',
+        lean: true,
+      }).then((result) => {
+        if (result.success) {
+          _res.send('user', {
+            layout: 'default',
+            user: _req.session.user,
+            profile: result.results[0],
+            title: result.results[0],
+          });
+        } else {
+          _res.status(404).render('error/404', {
+            layout: 'error',
+            user: _req.session.user,
+          });
+        }
+      });
+    }
+  });
   return route;
 }());

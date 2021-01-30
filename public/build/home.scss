@@ -1,0 +1,163 @@
+h3.display-3 span {
+  color: #fff;
+  border: 1px solid #fff;
+  padding: 13px 25px;
+  font-family: $heading-family;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  transition: all 0.5s;
+  -webkit-animation: neon1 1.5s ease-in-out infinite alternate;
+  -moz-animation: neon1 1.5s ease-in-out infinite alternate;
+  animation: neon1 1.5s ease-in-out infinite alternate;
+}
+
+#landing {
+  min-height: 50vh;
+}
+
+#topMovie {
+  padding: 0;
+  
+  .content {
+    color: #ffffff;
+    padding: 30px;
+
+    .spinner {
+      margin-top: 15%;
+      margin-bottom: 15%;
+    }
+  }
+}
+
+#top15 {
+  padding-bottom: 8%;
+
+  .spinner {
+    margin-top: 15%;
+  }
+
+  .card {
+    margin-top: 15%;
+    color: #000000;
+    text-decoration: none;
+    min-height: 50vh;
+
+    .card-title {
+      color: $pink;
+    }
+  }
+}
+
+@media screen and (max-width: 767px) {
+  #topMovie {
+    .content {
+      min-height: 100vh;
+      margin: 0 auto;
+      background-color: $darker;
+    }
+  }
+
+  #top15 {
+    background-color: $dark !important;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  #topMovie {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px;
+    position: relative;
+    background-image: url('../img/intro-bg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+
+    .content {
+      position: relative;
+      margin: 0 auto;
+      width: 70vw;
+      min-height: 80%;
+      background: $dark;
+
+      &::after {
+        content: '';
+        z-index: -10;
+        border: 1px solid #ffffff;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        bottom: 15px;
+        right: 15px;
+      }
+
+      &::before {
+        content: '';
+        z-index: -10;
+        border: 1px solid #ffffff;
+        position: absolute;
+        top: 25px;
+        left: 25px;
+        bottom: 25px;
+        right: 25px;
+      }
+    }
+  }
+}
+
+@-webkit-keyframes neon1 {
+  from {
+    text-shadow: 0 0 5px #ddd,
+      0 0 10px #ddd,
+      0 0 15px #ddd,
+      0 0 20px #FF1177,
+      0 0 35px #FF1177,
+      0 0 40px #FF1177,
+      0 0 50px #FF1177,
+      0 0 75px #FF1177;
+    box-shadow: 0 0 2px #ddd,
+      0 0 5px #ddd,
+      0 0 7px #ddd,
+      0 0 10px #FF1177,
+      0 0 15px #FF1177,
+      0 0 20px #FF1177,
+      0 0 25px #FF1177,
+      0 0 33px #FF1177,
+      inset 0 0 2px #ddd,
+      inset 0 0 5px #ddd,
+      inset 0 0 7px #ddd,
+      inset 0 0 10px #FF1177,
+      inset 0 0 15px #FF1177,
+      inset 0 0 20px #FF1177,
+      inset 0 0 25px #FF1177,
+      inset 0 0 33px #FF1177;
+  }
+
+  to {
+    text-shadow: 0 0 3px #ddd,
+      0 0 5px #ddd,
+      0 0 8px #ddd,
+      0 0 10px #FF1177,
+      0 0 18px #FF1177,
+      0 0 20px #FF1177,
+      0 0 25px #FF1177,
+      0 0 33px #FF1177;
+    box-shadow: 0 0 1px #ddd,
+      0 0 2px #ddd,
+      0 0 4px #ddd,
+      0 0 5px #FF1177,
+      0 0 8px #FF1177,
+      0 0 10px #FF1177,
+      0 0 11px #FF1177,
+      0 0 14px #FF1177,
+      inset 0 0 1px #ddd,
+      inset 0 0 2px #ddd,
+      inset 0 0 4px #ddd,
+      inset 0 0 5px #FF1177,
+      inset 0 0 8px #FF1177,
+      inset 0 0 10px #FF1177,
+      inset 0 0 11px #FF1177,
+      inset 0 0 14px #FF1177;
+  }
+}

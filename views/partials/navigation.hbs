@@ -1,0 +1,45 @@
+<nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">
+      <img src="/img/popcorn.svg" height="32px" width="32px" class="logo">
+      <span class="ms-2">Movie Metro</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navToggler"
+      aria-controls="navToggler" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navToggler">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {{#if active.home }} active {{/if}}" aria-current="page" href="#">Home</a>
+        </li>
+        {{#if user}}
+          <li class="nav-item {{#if active.profile }} active {{/if}} dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Account
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="accountDropdown">
+              <li class="dropdown-item">
+                <a class="nav-link " href="/user/view/{{user._id}}">Profile</a>
+              </li>
+              <li><a class="dropdown-item" href="/user/logout">Log Out</a></li>
+            </ul>
+          </li>
+        {{else}}
+          <li class="nav-item">
+            <a class="nav-link {{#if active.login }} active {{/if}}" href="/user/view/login">Login</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link {{#if active.register }} active {{/if}}" href="/user/view/register">Register</a>
+          </li>
+        {{/if}}
+      </ul>
+      <form class="d-flex">
+        <input class="form-control form-control-sm me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-sm btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>

@@ -37,10 +37,11 @@ export default (function () {
 
   route.get('/', (_req, _res) => {
     _res.render('index', {
-      layout: 'default',
+      layout: 'skeleton',
       active: { home: true },
       title: 'Home Page',
       user: _req.session.user,
+      script: ['home'],
     });
   });
 
