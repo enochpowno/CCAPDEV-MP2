@@ -43,7 +43,7 @@ h6, .display-6 {
 
 .card-img-top {
   width: 100%;
-  height: 10vw;
+  height: 200px;
   object-fit: cover;
 }
 
@@ -117,16 +117,24 @@ h3.display-3 span {
 }
 
 #top15 {
-  padding-bottom: 8%;
+  padding-bottom: 5%;
+  /* the slides */
+  /* the parent */
 }
 #top15 .spinner {
   margin-top: 15%;
 }
+#top15 .slick-slide {
+  margin-left: 27px;
+}
+#top15 .slick-list {
+  margin-left: -27px;
+}
 #top15 .card {
-  margin-top: 15%;
   color: #000000;
   text-decoration: none;
-  min-height: 50vh;
+  min-height: 450px;
+  max-height: 450px;
 }
 #top15 .card .card-title {
   color: #ba35db;

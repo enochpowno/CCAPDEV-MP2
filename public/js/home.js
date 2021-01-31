@@ -32,6 +32,31 @@ $(document).ready(() => {
     },
   });
 
+  $('.slick-carousel').slick({
+    speed: 300,
+    slidesToShow: 4,
+    slidesToScroll: 4,
+    dots: false,
+    infinite: true,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  });
+
   $.ajax({
     url: '/movie/top',
     method: 'GET',
@@ -42,26 +67,7 @@ $(document).ready(() => {
       $('#top15 .spinner').remove();
 
       movies.forEach((movie) => {
-        $('#top15 .owl-carousel').append(createMovieCard(movie));
-      });
-
-      $('.owl-carousel').owlCarousel({
-        margin: 25,
-        nav: false,
-        responsive: {
-          0: {
-            items: 1,
-          },
-          412: {
-            items: 2,
-          },
-          768: {
-            items: 3,
-          },
-          1000: {
-            items: 4,
-          },
-        },
+        $('#top15 .slick-carousel').slick("slickAdd", createMovieCard(movie));
       });
     },
   });

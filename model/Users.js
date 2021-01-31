@@ -12,9 +12,15 @@ const UserSchema = new Mongoose.Schema({
     required: [true, 'Your username is required.'],
   },
 
+  description: {
+    type: String,
+    required: [true, 'Your description is required.'],
+  },
+
   password: {
     type: String,
     required: [true, 'Your password is requried.'],
+    minlength: [8, 'Your password must be at least 8 characters long.'],
   },
 
   email: {

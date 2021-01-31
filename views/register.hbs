@@ -1,0 +1,57 @@
+<div class="container-fluid min-vh-100 pt-5">
+  <form class="container card">
+    <div class="card-body">
+      <div class="card-title">
+        <h5 class="display-5">Registration</h5>
+      </div>
+      <div class="form-row row">
+        <div class="form-group col-md-6 my-2">
+          <label for="username" class="form-label">Username</label>
+          <input required autocomplete="username" type="text" class="form-control" id="username" name="username" placeholder="Username">
+        </div>
+        <div class="form-group col-md-6 my-2">
+          <label for="password" class="form-label">Password</label>
+          <input required type="password" class="form-control" id="password" name="password" placeholder="Password">
+        </div>
+      </div>
+      <div class="form-row row">
+        <div class="form-group col-md-6 my-2">
+          <label for="email" class="form-label">Email</label>
+          <input required autocomplete="email" type="email" class="form-control" id="email" name="email" placeholder="Email">
+        </div>
+        <div class="form-group col-md-6 my-2">
+          <label for="name" class="form-label">Full Name</label>
+          <input required autocomplete="name" type="text" class="form-control" id="name" name="name" placeholder="Full Name">
+        </div>
+      </div>
+
+      <div class="form-row row">
+        <div class="form-group col-md-6 my-2">
+          <label for="description" class="form-label">Description</label>
+          <div class="form-floating">
+            <textarea class="form-control" placeholder="Write a short description about yourself here..." name="description" id="description"
+              style="height: 100px"></textarea>
+            <label for="description">Write a short description about yourself here...</label>
+          </div>
+        </div>
+        <div class="form-group col-md-6 my-2">
+          <label for="photo" class="form-label">Profile Photo</label>
+          <input required class="form-control" type="file" id="photo" name="photo" accept="image/*">
+        </div>
+      </div>
+
+      <div class="form-row row">
+        <div class="col-md-4 my-2">
+          <button type="submit" class="btn btn-primary">
+            <span class="spinner-grow spinner-grow-sm visually-hidden" role="status" aria-hidden="true"></span>
+            <span class="visually-hidden">Waiting for a response...</span>
+            <b>Register</b>
+          </button>
+        </div>
+        <div class="col-md-8 my-2" id="responseView">
+
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

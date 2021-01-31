@@ -1,0 +1,137 @@
+<form class="modal fade" id="update" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="updateLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateLabel">Update Account Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="changeDetails-tab" data-bs-toggle="pill" href="#changeDetails" role="tab"
+              aria-controls="changeDetails" aria-selected="true" data-type='details'>Change Details</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="changePassword-tab" data-bs-toggle="pill" href="#changePassword" role="tab"
+              aria-controls="changePassword" aria-selected="false" data-type='password'>Change Password</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="changeDetails" role="tabpanel" aria-labelledby="changeDetails-tab">
+            <div class="form-row row">
+              <div class="form-group col-md-6 my-2">
+                <label for="name" class="form-label">Full Name</label>
+                <input autocomplete="name" type="text" class="form-control" id="name" name="name"
+                  placeholder="Full Name" value="{{profile.name}}">
+              </div>
+
+              <div class="form-group col-md-6 my-2">
+                <label for="photo" class="form-label">Profile Photo</label>
+                <input class="form-control" type="file" id="photo" name="photo" accept="image/*">
+              </div>
+            </div>
+            <div class="form-row row">
+              <div class="form-group col-md-12 my-2">
+                <label for="description" class="form-label">Description</label>
+                <div class="form-floating">
+                  <textarea class="form-control" placeholder="Write a short description about yourself here..." name="description"
+                    id="description" style="height: 100px">{{profile.description}}</textarea>
+                  <label for="description">Write a short description about yourself here...</label>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 responseView"></div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="changePassword" role="tabpanel" aria-labelledby="changePassword-tab">
+            <div class="form-row row">
+              <div class="form-group col-md-12 my-2">
+                <label for="npassword" class="form-label">New Password</label>
+                <input type="password" class="form-control" id="npassword" name="npassword" placeholder="New Password">
+              </div>
+            </div>
+            <div class="form-row row">
+              <div class="form-group col-md-12 my-2">
+                <label for="cpassword" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="cpassword" name="cpassword" placeholder="Confirm Password">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 responseView"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div style="float: left;">
+          <div class="input-group">
+            <span class="input-group-text">Password</span>
+            <input required type="password" name="password" id="password" aria-label="First name" class="form-control">
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">
+          <span class="spinner-grow spinner-grow-sm visually-hidden" role="status" aria-hidden="true"></span>
+          <span class="visually-hidden">Waiting for a response...</span>
+          <b>Update</b>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="container p-5 min-vh-100">
+  <div class="row col-md-12 card">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img src="{{img profile.photo}}" style="width: 100%; height: auto;" id="photoView">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title" id="nameView">{{profile.name}}</h5>
+          <small class="card-subtitle text-muted">@{{profile.username}} | <a href="mailto:{{profile.email}}" style="text-decoration: none;">{{profile.email}}</a></h6>
+          
+          <h6 class="mt-3">About Me:</h6>
+          <p class="card-text mt-2 text-align-justify" id="descriptionView">{{profile.description}}</p>
+
+          {{#iff user._id 'strcmp' profile._id}}
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#update">Update Details</button>
+          {{/iff}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row col-md-12 mt-5">
+    {{#if profile.reviews}}
+      <div id="reviews">
+
+      </div>
+    {{else}}
+    <h6 class="display-6">No Reviews</h6>
+    <div id="reviews" data-id="{{profile._id}}">
+      <ul class="pagination">
+        <li class="pagination-prev"><a href="#">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">4</a></li>
+        <li class="page-item"><a class="page-link" href="#">5</a></li>
+
+        <li class="page-item"><a class="page-link" href="#">6</a></li>
+        <li class="page-item"><a class="page-link" href="#">7</a></li>
+        <li class="page-item"><a class="page-link" href="#">8</a></li>
+
+        <li class="page-item"><a class="page-link" href="#">8</a></li>
+        <li class="page-item"><a class="page-link" href="#">9</a></li>
+        <li class="page-item"><a class="page-link" href="#">10</a></li>
+        <li class="pagination-next"><a href="#">Next</a></li>
+      </ul>
+    </div>
+    {{/if}}
+  </div>
+</div>

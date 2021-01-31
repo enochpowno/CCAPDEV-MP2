@@ -1,10 +1,9 @@
 import { createHash } from 'crypto';
 import { Users } from '../model';
 
-const sha256 = createHash('sha256');
 class AccountController {
   hash(s) {
-    return sha256.update(s).digest('hex');
+    return createHash('sha256').update(s).digest('hex');
   }
 
   async get({
@@ -40,7 +39,7 @@ class AccountController {
   }
 
   async create({
-    name, username, password, email, photo,
+    name, username, password, email, photo, description,
   }) {
     const ret = {
       success: false,
@@ -49,28 +48,34 @@ class AccountController {
       errors: [],
     };
 
-    const user = await this.get({ filter: { username } }, false);
+    const user = await this.get({ filter: { $or: [{ username }, { email }] } }, false);
 
-    if (user.results) {
-      if (user.results) {
+    if (user.errors.length === 0) {
+      if (user.results.length === 0) {
         const account = new Users({
           name,
           username,
           email,
           photo,
-          password: hash(password),
+          password: this.hash(password),
+          description,
         });
 
         try {
-          ret.result = await account.save();
-          ret.success = true;
+          if (password && password.length < 8) {
+            ret.errors.push('Your password must be at least 8 characters long.');
+          } else {
+            ret.result = await account.save();
+            ret.message = "You've succefully created your account! You can now login.";
+            ret.success = true;
+          }
         } catch (e) {
           Object.keys(e.errors).forEach((error) => {
-            ret.errors.push(error.message);
+            ret.errors.push(e.errors[error].message);
           });
         }
       } else {
-        ret.errors.push('Oops! Looks like that username is already taken.');
+        ret.errors.push('Oops! Looks like that username or email is already taken.');
       }
     } else {
       ret.errors.push(...user.errors);
@@ -87,12 +92,13 @@ class AccountController {
       errors: [],
     };
 
-    const account = await get({ filter: { username, password: hash(password) } });
+    const account = await this.get({ filter: { username, password: this.hash(password) } });
 
     if (account.success) {
-      if (account.result) {
+      if (account.results) {
         ret.success = true;
-        ret.results = account.results[0];
+        ret.results = [account.results[0]];
+        ret.message = 'You\'ve succesfully logged in, please wait while you are being redirected...';
       } else {
         ret.errors.push('Oops! We can\'t find any account with that username.');
       }
@@ -110,9 +116,10 @@ class AccountController {
       if (result.ok) {
         return {
           success: true,
-          message: 'You successfully updated that review!',
+          message: 'You successfully updated your details!',
           errors: [],
           results: [result],
+          updates,
         };
       }
     } catch (e) {}
@@ -120,8 +127,9 @@ class AccountController {
     return {
       success: false,
       message: '',
-      errors: ['Something went wrong while trying to update that movie!'],
+      errors: ['Something went wrong while trying to update your details!'],
       results: null,
+      updates: null,
     };
   }
 

@@ -30,17 +30,27 @@ h3.display-3 span {
 }
 
 #top15 {
-  padding-bottom: 8%;
+  padding-bottom: 5%;
 
   .spinner {
     margin-top: 15%;
   }
 
+  /* the slides */
+  .slick-slide {
+    margin-left: 27px;
+  }
+
+  /* the parent */
+  .slick-list {
+    margin-left: -27px;
+  }
+
   .card {
-    margin-top: 15%;
     color: #000000;
     text-decoration: none;
-    min-height: 50vh;
+    min-height: 450px;
+    max-height: 450px;
 
     .card-title {
       color: $pink;

@@ -12,13 +12,12 @@ export default (function () {
       if (_req.cookies.user) {
         AccountController.get({
           filter: {
-            _id: _req.cookies.user._id,
+            _id: _req.cookies.user,
           },
           lean: true,
         }).then(({ success, results }) => {
-          if (success && results && results.length > 0) {
+          if (success && results.length > 0) {
             delete results[0].password;
-            delete results[0].reviews;
 
             _req.session.user = results[0];
           } else {
