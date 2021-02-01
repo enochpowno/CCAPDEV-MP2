@@ -22,11 +22,11 @@ export const escapeHTML = (str) => {
 
 export const sanitize = (_req, _res, next) => {
   Object.keys(_req.body).forEach((key) => {
-    if (typeof _req.body[key] === 'string') _req.body[key] = escapeHTML(_req.body[key].trim().replace(/\s+/g, ' '));
+    if (typeof _req.body[key] === 'string') _req.body[key] = escapeHTML(_req.body[key].trim().replace(/[ \t]{2, }/g, ' '));
   });
 
   Object.keys(_req.query).forEach((key) => {
-    if (typeof _req.query[key] === 'string') _req.query[key] = escapeHTML(_req.query[key].trim().replace(/\s+/g, ' '));
+    if (typeof _req.query[key] === 'string') _req.query[key] = escapeHTML(_req.query[key].trim().replace(/[ \t]{2, }/g, ' '));
   });
 
   next();

@@ -19,6 +19,10 @@ $content-family: Lora, 'serif';
   }
 }
 
+p:not(.nowrap) {
+  white-space: pre-wrap !important;
+}
+
 .bg-gray {
   color: #ffffff;
   background-color: $gray-lighter !important;
