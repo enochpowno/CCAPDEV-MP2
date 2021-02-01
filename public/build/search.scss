@@ -1,0 +1,12 @@
+#movies {
+  .card {
+    color: #000000;
+    text-decoration: none;
+    min-height: 450px;
+    max-height: 450px;
+
+    .card-title {
+      color: $pink;
+    }
+  }
+}

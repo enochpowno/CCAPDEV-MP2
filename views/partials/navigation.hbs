@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top" style="z-index: 9999;">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">
       <img src="/img/popcorn.svg" height="32px" width="32px" class="logo">
@@ -36,10 +36,12 @@
           </li>
         {{/if}}
       </ul>
-      <form class="d-flex">
-        <input class="form-control form-control-sm me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-sm btn-outline-success" type="submit">Search</button>
-      </form>
+      {{#unless skeleton}}
+        <form class="d-flex" method="GET" action="/movie/view/search">
+          <input class="form-control form-control-sm me-2" name="q" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-sm btn-outline-success" type="submit">Search</button>
+        </form>
+      {{/unless}}
     </div>
   </div>
 </nav>

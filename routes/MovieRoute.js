@@ -6,7 +6,7 @@ import { mustLogin, querify } from './helpers';
 const up = multer({});
 
 const paginationOptions = {
-  sort: 'date',
+  sort: '-date',
   page: 1,
   limit: 15,
   lean: true,
@@ -137,15 +137,38 @@ export default (function () {
   route.put('/vote/:type', (_req, _res) => {
     if (mustLogin(_req)) {
       if (_req.body.movie) {
+        const push = {};
+        const pull = {};
+        const inc = {};
+
+        if (_req.params.type == 'up') {
+          push.upvoters = _req.session.user._id;
+          pull.downvoters = _req.session.user._id;
+
+          if (_req.body.hadDownvoted) {
+            inc.downvote = -1;
+          }
+
+          inc.upvote = 1;
+        } else if (_req.params.type == 'down') {
+          push.downvoters = _req.session.user._id;
+          pull.upvoters = _req.session.user._id;
+
+          if (_req.body.hadUpvoted) {
+            inc.upvote = -1;
+          }
+
+          inc.downvote = 1;
+        }
+
         MovieController.update({
           filter: {
             _id: _req.body.movie,
           },
           updates: {
-            $inc: {
-              upvote: (_req.params.type === 'up') ? 1 : 0,
-              downvote: (_req.params.type === 'down') ? 1 : 0,
-            },
+            $inc: inc,
+            $push: push,
+            $pull: pull,
           },
         }).then((result) => _res.send(result));
       } else {
@@ -186,15 +209,17 @@ export default (function () {
 
   route.get('/view/search', (_req, _res) => {
     _res.render('search', {
-      layout: 'default',
+      layout: 'skeleton',
       user: _req.session.user,
+      title: `Movie Search: ${_req.query.q}`,
+      script: ['search', 'rpage.min'],
+      search: _req.query.q,
     });
   });
 
   route.get('/view/:movie', (_req, _res) => {
     MovieController.get({
       filter: { _id: _req.params.movie },
-      projection: '-reviews',
     }).then((result) => {
       if (!result.success && result.results.length > 0) {
         _res.status(404).render('error/404', {
@@ -204,9 +229,24 @@ export default (function () {
       } else {
         _res.render('movie', {
           layout: 'default',
-          user: _req.session.usesr,
+          user: _req.session.user,
           active: { movie: true },
           movie: result.results[0],
+          voteStatus: (function () {
+            if (_req.session.user) {
+              for (let i = 0; i < result.results[0].upvoters.length; i++) {
+                if (result.results[0].upvoters[i].toString() == _req.session.user._id.toString()) return 'up';
+              }
+
+              for (let i = 0; i < result.results[0].downvoters.length; i++) {
+                if (result.results[0].downvoters[i].toString() == _req.session.user._id.toString()) return 'down';
+              }
+            }
+
+            return null;
+          }()),
+          title: result.results[0].title,
+          script: ['movie', 'rpage.min'],
         });
       }
     });

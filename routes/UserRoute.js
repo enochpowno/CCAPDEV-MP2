@@ -3,11 +3,18 @@ import {
   Router,
 } from 'express';
 import {
-  AccountController,
+  AccountController, ReviewController,
 } from '../controller';
 import {
   mustLogin, sanitize,
 } from './helpers';
+
+const paginationOptions = {
+  sort: '-date',
+  page: 1,
+  limit: 15,
+  lean: true,
+};
 
 const up = multer({});
 
@@ -122,6 +129,24 @@ export default (function () {
         errors: ['You must be logged in!'],
       });
     }
+  });
+
+  route.get('/reviews/:user', (_req, _res) => {
+    const pageOptClone = {
+      ...paginationOptions,
+      page: (_req.query.page && _req.query.page >= 1) ? parseInt(_req.query.page, 10) : 1,
+      populate: {
+        path: 'user',
+        select: 'username photo',
+      },
+    };
+
+    ReviewController.paginate({
+      filter: {
+        user: _req.params.user,
+      },
+      options: pageOptClone,
+    }).then((result) => _res.send(result));
   });
 
   route.get('/view/login', (_req, _res) => {

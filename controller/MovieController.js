@@ -15,7 +15,7 @@ export default class MovieController {
       if (populate) {
         ret.results = await Movies
           .find(filter, projection, options)
-          .populate('reviews')
+          .populate(populate)
           .lean(lean)
           .exec();
       } else {

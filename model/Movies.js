@@ -23,6 +23,14 @@ const MovieSchema = new Mongoose.Schema({
     min: [0, 'Upvotes must be a positive number.'],
   },
 
+  upvoters: [
+    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Users' },
+  ],
+
+  downvoters: [
+    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Users' },
+  ],
+
   downvote: {
     type: Number,
     default: 0,

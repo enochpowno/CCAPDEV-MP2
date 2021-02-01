@@ -6,7 +6,9 @@ import cookieParser from 'cookie-parser';
 import expressSession from 'express-session';
 import hbs from 'express-hbs';
 import route from './route';
-import { datePrint, iff, img } from './helpers';
+import {
+  datePrint, iff, img, abbreviateNumber,
+} from './helpers';
 
 const app = express();
 
@@ -30,6 +32,7 @@ function connect() {
 hbs.registerHelper('datePrint', datePrint);
 hbs.registerHelper('iff', iff);
 hbs.registerHelper('img', img);
+hbs.registerHelper('abbreviateNumber', abbreviateNumber);
 
 // setup express server
 app.use(urlencoded({ extended: false }));

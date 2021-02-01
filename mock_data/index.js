@@ -1,14 +1,27 @@
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
-const { Movies, Users } = require('../model');
+const {
+  Movies, Users, Comments, Reviews,
+} = require('../model');
 
 function mock() {
   const mockArray = [];
   console.log('Started making mocks...');
 
+  mockArray.push(new Promise((resolve, reject) => {
+    console.log('Clearing comments...');
+    Comments.deleteMany({}).then(() => resolve());
+  }));
+
+  mockArray.push(new Promise((resolve, reject) => {
+    console.log('Clearing reviews...');
+    Reviews.deleteMany({}).then(() => resolve());
+  }));
+
   mockArray.push(
     new Promise((resolve, reject) => {
+      console.log('Clearing movies...');
       Movies.deleteMany({}).then(() => {
         console.log('Creating movie mock data...');
         const rawMovie = fs.readFileSync(path.join(__dirname, 'movies.json'));
@@ -28,6 +41,7 @@ function mock() {
 
   mockArray.push(
     new Promise((resolve, reject) => {
+      console.log('Clearing users..');
       Users.deleteMany({}).then(() => {
         console.log('Creating user mock data...');
         const rawUsers = fs.readFileSync(path.join(__dirname, 'users.json'));

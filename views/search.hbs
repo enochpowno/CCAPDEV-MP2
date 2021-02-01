@@ -1,0 +1,27 @@
+<nav class="navbar fixed-top navbar-dark bg-gray" style="top: 58px;" id="search">
+  <div class="container-fluid">
+    <form class="container" method="GET" action="/movie/view/search">
+      <div class="row">
+        <div class="col-md-10">
+          <input class="form-control form-control-sm me-2" name="q" id="q" type="search" placeholder="Search" aria-label="Search" value="{{search}}">
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-sm btn-success w-100" type="submit">Search</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</nav>
+
+<div class="container min-vh-100 mb-5" style="margin-top: 100px;">
+  <div class="row">
+    <h5 class="col-md-12">Search Results:</h5>
+  </div>
+  <div id="movies" class="row">
+    <div class="spinner d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>

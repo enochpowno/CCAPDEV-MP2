@@ -15,9 +15,7 @@ export default class ReviewController {
       if (populate) {
         ret.results = await Reviews
           .find(filter, projection, options)
-          .populate('comments')
-          .populate('movie')
-          .populate('user')
+          .populate(populate)
           .lean(lean)
           .exec();
       } else {
@@ -99,6 +97,7 @@ export default class ReviewController {
     try {
       ret.result = await review.save();
       ret.success = true;
+      ret.message = "You've succesfully left a review on this movie.";
     } catch (e) {
       Object.keys(e.errors).forEach((error) => {
         ret.errors.push(error.message);

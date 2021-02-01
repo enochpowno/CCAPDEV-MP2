@@ -22,6 +22,11 @@ h6, .display-6 {
   font-family: Nunito, "sans-serif";
 }
 
+.bg-gray {
+  color: #ffffff;
+  background-color: #333333 !important;
+}
+
 .bg-dark {
   color: #ffffff;
   background-color: #111111 !important;
@@ -200,6 +205,15 @@ h3.display-3 span {
     text-shadow: 0 0 3px #ddd, 0 0 5px #ddd, 0 0 8px #ddd, 0 0 10px #FF1177, 0 0 18px #FF1177, 0 0 20px #FF1177, 0 0 25px #FF1177, 0 0 33px #FF1177;
     box-shadow: 0 0 1px #ddd, 0 0 2px #ddd, 0 0 4px #ddd, 0 0 5px #FF1177, 0 0 8px #FF1177, 0 0 10px #FF1177, 0 0 11px #FF1177, 0 0 14px #FF1177, inset 0 0 1px #ddd, inset 0 0 2px #ddd, inset 0 0 4px #ddd, inset 0 0 5px #FF1177, inset 0 0 8px #FF1177, inset 0 0 10px #FF1177, inset 0 0 11px #FF1177, inset 0 0 14px #FF1177;
   }
+}
+#movies .card {
+  color: #000000;
+  text-decoration: none;
+  min-height: 450px;
+  max-height: 450px;
+}
+#movies .card .card-title {
+  color: #ba35db;
 }
 
 /*# sourceMappingURL=index.css.map */

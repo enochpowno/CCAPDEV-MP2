@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { ReviewControlelr } from '../controller';
+import { AccountController, MovieController, ReviewController } from '../controller';
 import { mustLogin } from './helpers';
 
 const paginationOptions = {
-  sort: 'date',
+  sort: '-date',
   page: 1,
   limit: 15,
   lean: true,
@@ -16,9 +16,13 @@ export default (function () {
     const pageOptClone = {
       ...paginationOptions,
       page: (_req.query.page && _req.query.page >= 1) ? parseInt(_req.query.page, 10) : 1,
+      populate: {
+        path: 'user',
+        select: 'username photo',
+      },
     };
 
-    ReviewControlelr.paginate({
+    ReviewController.paginate({
       filter: {
         movie: _req.params.movie,
       },
@@ -28,12 +32,30 @@ export default (function () {
 
   route.post('/', (_req, _res) => {
     if (mustLogin(_req)) {
-      ReviewControlelr.create({
+      ReviewController.create({
         content: _req.body.content,
         user: _req.session.user._id,
         movie: _req.body.movie,
         title: _req.body.title,
-      }).then((result) => _res.send(result));
+      }).then((result) => {
+        MovieController.update({
+          filter: { _id: _req.body.movie },
+          updates: {
+            $push: {
+              reviews: result.result._id,
+            },
+          },
+        }).then((result0) => {
+          AccountController.update({
+            filter: { _id: _req.session.user._id },
+            updates: {
+              $push: {
+                reviews: result.result._id,
+              },
+            },
+          }).then((result1) => _res.send(result));
+        });
+      });
     } else {
       _res.send({
         success: false,
@@ -47,7 +69,7 @@ export default (function () {
   route.delete('/', (_req, _res) => {
     if (mustLogin(_req)) {
       if (_req.body.review) {
-        ReviewControlelr.delete({
+        ReviewController.delete({
           filter: {
             _id: _req.body.review,
             user: _req.session.user._id,
@@ -73,7 +95,7 @@ export default (function () {
 
   route.put('/', (_req, _res) => {
     if (mustLogin(_req)) {
-      ReviewControlelr.update({
+      ReviewController.update({
         filter: {
           _id: _req.body.review,
           user: _req.session.user._id,
@@ -96,7 +118,7 @@ export default (function () {
   route.put('/vote/:type', (_req, _res) => {
     if (mustLogin(_req)) {
       if (_req.body.review) {
-        ReviewControlelr.update({
+        ReviewController.update({
           filter: {
             _id: _req.body.review,
           },
@@ -126,7 +148,7 @@ export default (function () {
   });
 
   route.get('/view/:review', (_req, _res) => {
-    ReviewControlelr.get({
+    ReviewController.get({
       filter: { _id: _req.params.review },
       projection: '-comments',
     }).then((result) => {
@@ -138,9 +160,10 @@ export default (function () {
       } else {
         _res.render('review', {
           layout: 'default',
-          user: _req.session.usesr,
+          user: _req.session.user,
           active: { movie: true },
           review: result.results[0],
+          title: `Review: ${result.results[0].title}`,
         });
       }
     });

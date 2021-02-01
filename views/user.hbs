@@ -1,3 +1,5 @@
+{{#if user}}
+{{#iff user._id 'strcmp' profile._id}}
 <form class="modal fade" id="update" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
   aria-labelledby="updateLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -35,8 +37,8 @@
               <div class="form-group col-md-12 my-2">
                 <label for="description" class="form-label">Description</label>
                 <div class="form-floating">
-                  <textarea class="form-control" placeholder="Write a short description about yourself here..." name="description"
-                    id="description" style="height: 100px">{{profile.description}}</textarea>
+                  <textarea class="form-control" placeholder="Write a short description about yourself here..."
+                    name="description" id="description" style="height: 100px">{{profile.description}}</textarea>
                   <label for="description">Write a short description about yourself here...</label>
                 </div>
               </div>
@@ -55,7 +57,8 @@
             <div class="form-row row">
               <div class="form-group col-md-12 my-2">
                 <label for="cpassword" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="cpassword" name="cpassword" placeholder="Confirm Password">
+                <input type="password" class="form-control" id="cpassword" name="cpassword"
+                  placeholder="Confirm Password">
               </div>
             </div>
             <div class="row">
@@ -81,6 +84,8 @@
     </div>
   </div>
 </form>
+{{/iff}}
+{{/if}}
 
 <div class="container p-5 min-vh-100">
   <div class="row col-md-12 card">
@@ -91,47 +96,36 @@
       <div class="col-md-8">
         <div class="card-body">
           <h5 class="card-title" id="nameView">{{profile.name}}</h5>
-          <small class="card-subtitle text-muted">@{{profile.username}} | <a href="mailto:{{profile.email}}" style="text-decoration: none;">{{profile.email}}</a></h6>
+          <small class="card-subtitle text-muted">@{{profile.username}} | <a href="mailto:{{profile.email}}" style="text-decoration: none;">{{profile.email}}</a></small>
           
           <h6 class="mt-3">About Me:</h6>
           <p class="card-text mt-2 text-align-justify" id="descriptionView">{{profile.description}}</p>
 
+          {{#if user}}
           {{#iff user._id 'strcmp' profile._id}}
             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#update">Update Details</button>
+            <a class="btn btn-danger btn-sm" href='/user/logout'>Log out</a>
           {{/iff}}
+          {{/if}}
         </div>
       </div>
     </div>
   </div>
 
+  <input type="hidden" name="user" id="user" value="{{profile._id}}">
   <div class="row col-md-12 mt-5">
-    {{#if profile.reviews}}
-      <div id="reviews">
-
-      </div>
-    {{else}}
-    <h6 class="display-6">No Reviews</h6>
-    <div id="reviews" data-id="{{profile._id}}">
-      <ul class="pagination">
-        <li class="pagination-prev"><a href="#">Previous</a></li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">4</a></li>
-        <li class="page-item"><a class="page-link" href="#">5</a></li>
-
-        <li class="page-item"><a class="page-link" href="#">6</a></li>
-        <li class="page-item"><a class="page-link" href="#">7</a></li>
-        <li class="page-item"><a class="page-link" href="#">8</a></li>
-
-        <li class="page-item"><a class="page-link" href="#">8</a></li>
-        <li class="page-item"><a class="page-link" href="#">9</a></li>
-        <li class="page-item"><a class="page-link" href="#">10</a></li>
-        <li class="pagination-next"><a href="#">Next</a></li>
-      </ul>
+    <div class="row">
+      <h5 class="col-md-12">My Reviews:</h5>
     </div>
-    {{/if}}
+    <div id="userReviews">
+      <div class="spinner d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+    {{#unless profile.reviews}}
+      <h6 class="display-6" id="noReviews">No Reviews</h6>
+    {{/unless}}
   </div>
 </div>

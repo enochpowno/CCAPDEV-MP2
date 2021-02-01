@@ -19,6 +19,11 @@ $content-family: Lora, 'serif';
   }
 }
 
+.bg-gray {
+  color: #ffffff;
+  background-color: $gray-lighter !important;
+}
+
 .bg-dark {
   color: #ffffff;
   background-color: $dark !important;

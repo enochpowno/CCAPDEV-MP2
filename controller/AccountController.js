@@ -20,7 +20,7 @@ class AccountController {
       if (populate) {
         ret.results = await Users
           .find(filter, projection, options)
-          .populate('reviews')
+          .populate(populate)
           .lean(lean)
           .exec();
       } else {
@@ -95,12 +95,12 @@ class AccountController {
     const account = await this.get({ filter: { username, password: this.hash(password) } });
 
     if (account.success) {
-      if (account.results) {
+      if (account.results && account.results.length > 0) {
         ret.success = true;
         ret.results = [account.results[0]];
         ret.message = 'You\'ve succesfully logged in, please wait while you are being redirected...';
       } else {
-        ret.errors.push('Oops! We can\'t find any account with that username.');
+        ret.errors.push('Oops! We can\'t find any account with that username and password.');
       }
     } else {
       ret.errors.push(...account.errors);

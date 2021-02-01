@@ -15,9 +15,7 @@ export default class CommentController {
       if (populate) {
         ret.results = await Comments
           .find(filter, projection, options)
-          .populate('replies')
-          .populate('review')
-          .populate('user')
+          .populate(populate)
           .lean(lean)
           .exec();
       } else {
