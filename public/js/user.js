@@ -74,10 +74,6 @@ $(document).ready(() => {
     $.ajax(ajaxOpts);
   });
 
-  $("#reviews").ready(() => {
-    $(".pagination").rPage();
-  });
-
   let currentPage = 1;
   let maxPages = Number.MAX_VALUE;
 
@@ -161,6 +157,7 @@ $(document).ready(() => {
           });
         });
 
+        pagination.rPage();
         $('#userReviews').append(pagination, ...createReviewRows(results.results.docs));
         $('#userReviews .spinner').addClass('d-none');
       },

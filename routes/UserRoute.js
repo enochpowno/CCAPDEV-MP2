@@ -24,6 +24,8 @@ export default (function () {
   route.get('/', (_req, _res) => {
     if (mustLogin(_req)) {
       _res.redirect(`/user/view/${_req.session.user._id}`);
+    } else if (mustLogin(_req, true)) {
+      _res.redirect('/admin');
     } else {
       _res.status(404).render('error/404', {
         layout: 'error',
@@ -32,7 +34,7 @@ export default (function () {
     }
   });
 
-  route.put('/', up.single('photo'), (_req, _res) => {
+  route.put('/', up.single('photo'), sanitize, (_req, _res) => {
     if (mustLogin(_req)) {
       let skip = false;
       const updates = {};
@@ -153,6 +155,7 @@ export default (function () {
     if (!mustLogin(_req)) {
       _res.render('login', {
         layout: 'default',
+        skeleton: false,
         active: {
           login: true,
         },
@@ -199,6 +202,7 @@ export default (function () {
     if (!mustLogin(_req)) {
       _res.render('register', {
         layout: 'default',
+        skeleton: false,
         active: {
           register: true,
         },
@@ -244,16 +248,21 @@ export default (function () {
 
   route.get('/view/:user', (_req, _res) => {
     if (_req.session.user && _req.params.user == _req.session.user._id.toString()) {
-      _res.render('user', {
-        layout: 'default',
-        active: {
-          profile: true,
-        },
-        user: _req.session.user,
-        profile: _req.session.user,
-        title: _req.session.user.name,
-        script: ['user', 'rpage.min'],
-      });
+      if (_req.session.user.admin) {
+        _res.redirect('/admin');
+      } else {
+        _res.render('user', {
+          layout: 'default',
+          skeleton: false,
+          active: {
+            profile: true,
+          },
+          user: _req.session.user,
+          profile: _req.session.user,
+          title: _req.session.user.name,
+          script: ['user', 'rpage.min'],
+        });
+      }
     } else {
       AccountController.get({
         filter: {
@@ -262,16 +271,21 @@ export default (function () {
         lean: true,
       }).then((result) => {
         if (result.success) {
-          _res.render('user', {
-            layout: 'default',
-            user: _req.session.user,
-            profile: result.results[0],
-            title: result.results[0].name,
-            script: ['rpage.min'],
-            active: {
-              profile: true,
-            },
-          });
+          if (result.results[0].admin) {
+            _res.redirect('/');
+          } else {
+            _res.render('user', {
+              layout: 'default',
+              skeleton: false,
+              user: _req.session.user,
+              profile: result.results[0],
+              title: result.results[0].name,
+              script: ['rpage.min'],
+              active: {
+                profile: true,
+              },
+            });
+          }
         } else {
           _res.status(404).render('error/404', {
             layout: 'error',

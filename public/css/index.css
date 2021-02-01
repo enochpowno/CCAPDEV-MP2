@@ -212,8 +212,10 @@ h3.display-3 span {
   min-height: 450px;
   max-height: 450px;
 }
-#movies .card .card-title {
-  color: #ba35db;
+#movies .card h5.card-title a,
+#movies .card h5.card-title {
+  text-decoration: none;
+  color: #ba35db !important;
 }
 
 /*# sourceMappingURL=index.css.map */

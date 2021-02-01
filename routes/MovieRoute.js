@@ -1,7 +1,7 @@
 import multer from 'multer';
 import { Router } from 'express';
-import { MovieController } from '../controller';
-import { mustLogin, querify } from './helpers';
+import { MovieController, AccountController } from '../controller';
+import { mustLogin, querify, sanitize } from './helpers';
 
 const up = multer({});
 
@@ -56,7 +56,7 @@ export default (function () {
     }).then((result) => _res.send(result));
   });
 
-  route.post('/', up.single('poster'), (_req, _res) => {
+  route.post('/', up.single('poster'), sanitize, (_req, _res) => {
     if (mustLogin(_req, true)) {
       MovieController.create({
         title: _req.body.title,
@@ -75,46 +75,74 @@ export default (function () {
     }
   });
 
-  route.put('/', up.single('poster'), (_req, _res) => {
+  route.put('/', up.single('poster'), sanitize, (_req, _res) => {
     if (mustLogin(_req, true)) {
-      if (_req.body.movie) {
-        const updates = {};
+      const updates = {};
 
-        Object.keys(_req.body).forEach((key, i, a) => {
-          updates[key] = _req.body[key];
+      if (_req.body.password) {
+        AccountController.get({
+          filter: {
+            _id: _req.session.user._id,
+            password: AccountController.hash(_req.body.password),
+          },
+          projection: 'password',
+        }).then((result) => {
+          if (result.success && result.results.length > 0) {
+            if (_req.body.id) {
+              Object.keys(_req.body).forEach((key, i, a) => {
+                if (_req.body[key] && key != 'id') updates[key] = _req.body[key];
+              });
+
+              if (_req.file) {
+                updates.poster = _req.file.buffer;
+              }
+
+              MovieController.update({
+                filter: { _id: _req.body.id },
+                updates,
+              }).then((result0) => _res.send(result0));
+            } else {
+              _res.send({
+                success: false,
+                message: '',
+                results: null,
+                errors: ['Oops! We can\'t find the movie you\'re trying to update'],
+              });
+            }
+          } else {
+            _res.send({
+              success: false,
+              results: null,
+              message: '',
+              errors: ['Invalid password, you need to input your current password before you can update anything!'],
+            });
+          }
         });
-
-        if (_req.file) {
-          updates.poster = _req.file.buffer;
-        }
-
-        MovieController.update({
-          filter: { _id: _req.body.id },
-          updates,
-        }).then((result) => _res.send(result));
       } else {
         _res.send({
           success: false,
-          message: '',
           results: null,
-          errors: ['Oops! We can\'t find the movie you\'re trying to delete'],
+          message: '',
+          errors: ['Your current password is required!'],
         });
       }
     } else {
       _res.send({
         success: false,
-        message: '',
         results: null,
-        errors: ['Uh oh! You\'re not allowed to do that!'],
+        message: '',
+        errors: ['You must be logged in!'],
       });
     }
   });
 
   route.delete('/', (_req, _res) => {
     if (mustLogin(_req, true)) {
-      if (_req.body.movies) {
+      if (_req.body.movie) {
         MovieController.delete({
-          _id: _req.body.movie,
+          filter: {
+            _id: _req.body.movie,
+          },
         }).then((result) => _res.send(result));
       } else {
         _res.send({
@@ -209,7 +237,8 @@ export default (function () {
 
   route.get('/view/search', (_req, _res) => {
     _res.render('search', {
-      layout: 'skeleton',
+      layout: 'default',
+      skeleton: true,
       user: _req.session.user,
       title: `Movie Search: ${_req.query.q}`,
       script: ['search', 'rpage.min'],
@@ -229,6 +258,7 @@ export default (function () {
       } else {
         _res.render('movie', {
           layout: 'default',
+          skeleton: false,
           user: _req.session.user,
           active: { movie: true },
           movie: result.results[0],

@@ -38,7 +38,7 @@ $(document).ready(() => {
         maxPages = results.results.totalPages;
 
         if (results.results.hasPrevPage) {
-          pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.prevPage}\' href="#"> << </a></li>`));
+          pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.prevPage}\' href="#"> &laquo; </a></li>`));
         } else {
           pagesArray.push($('<li class="page-item disabled"><a class="page-link"> &laquo; </a></li>'));
         }
@@ -48,7 +48,7 @@ $(document).ready(() => {
         }
 
         if (results.results.hasNextPage) {
-          pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.nextPage}\' href="#"> >> </a></li>`));
+          pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.nextPage}\' href="#"> &raquo; </a></li>`));
         } else {
           pagesArray.push($('<li class="page-item disabled"><a class="page-link"> &raquo; </a></li>'));
         }

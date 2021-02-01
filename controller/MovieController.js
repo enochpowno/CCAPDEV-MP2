@@ -64,9 +64,10 @@ export default class MovieController {
       if (result.ok) {
         return {
           success: true,
-          message: 'You successfully updated that review!',
+          message: 'You successfully updated that movie!',
           errors: [],
           results: [result],
+          updates,
         };
       }
     } catch (e) {}
@@ -76,6 +77,7 @@ export default class MovieController {
       message: '',
       errors: ['Something went wrong while trying to update that movie!'],
       results: null,
+      updates: null,
     };
   }
 
@@ -100,6 +102,7 @@ export default class MovieController {
     try {
       ret.result = await movie.save();
       ret.success = true;
+      ret.message = `You've succesfully created the movie: ${title}`;
     } catch (e) {
       Object.keys(e.errors).forEach((error) => {
         ret.errors.push(error.message);

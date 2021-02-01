@@ -5,8 +5,10 @@
     min-height: 450px;
     max-height: 450px;
 
-    .card-title {
-      color: $pink;
+    h5.card-title a,
+    h5.card-title {
+      text-decoration: none;
+      color: $pink !important;
     }
   }
 }

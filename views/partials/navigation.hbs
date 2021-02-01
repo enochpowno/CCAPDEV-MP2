@@ -14,18 +14,26 @@
           <a class="nav-link {{#if active.home }} active {{/if}}" aria-current="page" href="/">Home</a>
         </li>
         {{#if user}}
-          <li class="nav-item {{#if active.profile }} active {{/if}} dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Account
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="accountDropdown">
-              <li class="dropdown-item">
-                <a class="nav-link " href="/user/view/{{user._id}}">Profile</a>
-              </li>
-              <li class="dropdown-item"><a class="nav-link" href="/user/logout">Log Out</a></li>
-            </ul>
-          </li>
+          {{#if user.admin}}
+            <li class="nav-item">
+              <a class="nav-link {{#if active.admin }} active {{/if}}" href="/admin" role="button">
+                Admin Panel
+              </a>
+            </li>
+          {{else}}
+            <li class="nav-item {{#if active.profile }} active {{/if}} dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Account
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="accountDropdown">
+                <li class="dropdown-item">
+                  <a class="nav-link " href="/user/view/{{user._id}}">Profile</a>
+                </li>
+                <li class="dropdown-item"><a class="nav-link" href="/user/logout">Log Out</a></li>
+              </ul>
+            </li>
+          {{/if}}
         {{else}}
           <li class="nav-item">
             <a class="nav-link {{#if active.login }} active {{/if}}" href="/user/view/login">Login</a>

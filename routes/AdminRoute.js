@@ -1,7 +1,4 @@
-import multer from 'multer';
 import { Router } from 'express';
-
-const up = multer({});
 
 export default (function () {
   const route = Router();
@@ -17,10 +14,15 @@ export default (function () {
     }
   });
 
-  route.get('/admin', (_req, _res) => {
+  route.get('/', (_req, _res) => {
     _res.render('admin', {
-      layout: 'admin',
+      layout: 'default',
       user: _req.session.user,
+      skeleton: true,
+      title: 'Admin Panel',
+      script: ['admin', 'rpage.min'],
+      active: { admin: true },
+      search: _req.query.q || '',
     });
   });
 

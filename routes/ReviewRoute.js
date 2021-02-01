@@ -160,6 +160,7 @@ export default (function () {
       } else {
         _res.render('review', {
           layout: 'default',
+          skeleton: false,
           user: _req.session.user,
           active: { movie: true },
           review: result.results[0],

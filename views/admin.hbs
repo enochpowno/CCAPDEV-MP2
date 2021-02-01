@@ -1,18 +1,173 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12 card">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <img src="..." alt="...">
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content.
-              This content is a little bit longer.</p>
-            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+<form class="modal fade" id="update" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="updateLabel" aria-hidden="true" style="z-index: 99990;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateLabel">Update Movie Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row" id="addMovie">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="title" class="form-label">Movie Title</label>
+                  <input required type="text" class="form-control" name="title" id="title" placeholder="Movie Title">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="poster" class="form-label">Poster</label>
+                <input class="form-control" type="file" name="poster" id="poster" accept="image/*">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="price" class="form-label">Price</label>
+                  <input required type="number" class="form-control" min="0" step="0.01" name="price" id="price"
+                    placeholder="Price">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="status" class="form-label">Status</label>
+                  <select required class="form-select" id="status" name="status">
+                    <option value="available">Available</option>
+                    <option value="unavailable">Unavailable</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+      
+            <div class="row">
+              <div class="col-md-12">
+                <label for="synopsis">Synopsis</label>
+                <div class="form-floating">
+                  <textarea required class="form-control" placeholder="Leave a comment here" id="synopsis" name="synopsis"
+                    style="height: 150px"></textarea>
+                  <label for="synopsis">Enter movie synopsis here...</label>
+                </div>
+              </div>
+            </div>
+      
+            <div class="row">
+              <div class="col-md-12 my-2" id="responseViewUpdate">
+      
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div style="float: left;">
+          <div class="input-group">
+            <span class="input-group-text">Password</span>
+            <input required type="password" name="password" id="password" class="form-control">
+            <input required type="hidden" name="id" id="id" class="form-control">
           </div>
         </div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="reset" class="btn btn-secondary">Reset</button>
+        <button type="submit" class="btn btn-primary">
+          <span class="spinner-grow spinner-grow-sm visually-hidden" role="status" aria-hidden="true"></span>
+          <span class="visually-hidden">Waiting for a response...</span>
+          <b>Update</b>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="container p-5">
+  <form class="row col-md-12 card" id="addMovie">
+    <div class="card-body">
+      <h4 class="card-title">Add a Movie</h4>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="title" class="form-label">Movie Title</label>
+              <input required type="text" class="form-control" name="title" id="title" placeholder="Movie Title">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="poster" class="form-label">Poster</label>
+            <input required class="form-control" type="file" name="poster" id="poster" accept="image/*">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="price" class="form-label">Price</label>
+              <input required type="number" class="form-control" min="0" step="0.01" name="price" id="price" placeholder="Price">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select required class="form-select" id="status" name="status">
+                <option value="available">Available</option>
+                <option value="unavailable">Unavailable</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <label for="synopsis">Synopsis</label>
+            <div class="form-floating">
+              <textarea required class="form-control" placeholder="Leave a comment here" id="synopsis" name="synopsis" style="height: 150px"></textarea>
+              <label for="synopsis">Enter movie synopsis here...</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 my-2">
+            <button type="submit" class="btn btn-primary">
+              <span class="spinner-grow spinner-grow-sm visually-hidden" role="status" aria-hidden="true"></span>
+              <span class="visually-hidden">Waiting for a response...</span>
+              <b>Add Movie</b>
+            </button>
+          </div>
+          <div class="col-md-8 my-2" id="responseView">
+          
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<nav class="navbar sticky-top navbar-dark bg-gray" style="top: 58px;" id="search">
+  <div class="container-fluid">
+    <form class="container" method="GET" action="/admin">
+      <div class="row">
+        <div class="col-md-10">
+          <label for="q">Movie Search:</label>
+          <input class="form-control form-control-sm me-2" name="q" id="q" type="search" placeholder="Search"
+            aria-label="Search" value="{{search}}">
+        </div>
+        <div class="col-md-2">
+          <div>&nbsp;</div>
+          <button class="btn btn-sm btn-success w-100" type="submit">Search</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</nav>
+
+<div class="container min-vh-100 mb-5" style="margin-top: 50px;">
+  <div class="row">
+    <h5 class="col-md-12">Search Results:</h5>
+  </div>
+  <div id="movies" class="row">
+    <div class="spinner d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
     </div>
   </div>
 </div>

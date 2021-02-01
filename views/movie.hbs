@@ -9,6 +9,8 @@
           <h5 class="card-title" id="nameView">{{movie.title}}</h5>
             <h6 class="mt-3">Synopsis:</h6>
             <p class="card-text mt-2 text-align-justify" id="descriptionView">{{movie.synopsis}}</p>
+            <b>Status: </b> {{#iff movie.status 'strcmp' 'available'}} <i class="fas fa-check-circle text-success"></i> <span class="text-success">Available</span> 
+            {{else}} <i class="fas fa-times-circle text-danger"></i> <span class="text-danger">Unavailable</span> {{/iff}}  <br/>
             <b>Upvotes: </b> <span id="upvoteCount" data-num="{{movie.upvote}}">{{abbreviateNumber movie.upvote}}</span> <i class="far fa-thumbs-up"></i><br/>
             <b>Downvotes: </b> <span id="downvoteCount" data-num="{{movie.downvote}}">{{abbreviateNumber movie.downvote}}</span> <i class="far fa-thumbs-down"></i><br/>
             
@@ -110,6 +112,8 @@
     <div class="row">
       <h5 class="col-md-12">Reviews:</h5>
     </div>
+
+    {{#if movie.reviews}}
     <div id="movieReviews">
       <div class="spinner d-flex justify-content-center">
         <div class="spinner-border" role="status">
@@ -117,6 +121,8 @@
         </div>
       </div>
     </div>
+    {{/if}}
+    
     {{#unless movie.reviews}}
       <h6 class="display-6" id="noReviews">No Reviews</h6>
     {{/unless}}
