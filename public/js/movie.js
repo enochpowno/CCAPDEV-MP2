@@ -23,7 +23,7 @@ $(document).ready(() => {
             <div class='row'>
               <p class='col-md-8'> ${(doc.content.length > 250) ? `${doc.content.substr(0, 250)}...` : doc.content} <br/> ~ <a href='/user/view/${doc.user._id}' style='text-decoration: none'>@${doc.user.username}</a></p>
               <div class='col-md-4'>
-                <a href='/review/view/${doc._id}' class='w-100 btn btn-sm btn-primary'>View Review</a>
+                <a href='/review/view?review=${doc._id}&movie=${$('#movie').val()}' class='w-100 btn btn-sm btn-primary'>View Review</a>
               </div>
             </div>
           </div>
@@ -54,36 +54,41 @@ $(document).ready(() => {
       success: (results) => {
         maxPages = results.results.totalPages;
 
-        if (results.results.hasPrevPage) {
-          pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.prevPage}\' href="#"> << </a></li>`));
-        } else {
-          pagesArray.push($('<li class="page-item disabled"><a class="page-link"> &laquo; </a></li>'));
-        }
+        if (results.results.totalDocs > 0) {
+          if (results.results.hasPrevPage) {
+            pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.prevPage}\' href="#"> << </a></li>`));
+          } else {
+            pagesArray.push($('<li class="page-item disabled"><a class="page-link"> &laquo; </a></li>'));
+          }
 
-        for (let i = 0; i < maxPages; i++) {
-          pagesArray.push($(`<li class="page-item ${currentPage == i + 1 ? 'active' : ''}"><a class="page-link" data-page="${i + 1}" href="#">${i + 1}</a></li>`));
-        }
+          for (let i = 0; i < maxPages; i++) {
+            pagesArray.push($(`<li class="page-item ${currentPage == i + 1 ? 'active' : ''}"><a class="page-link" data-page="${i + 1}" href="#">${i + 1}</a></li>`));
+          }
 
-        if (results.results.hasNextPage) {
-          pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.nextPage}\' href="#"> >> </a></li>`));
-        } else {
-          pagesArray.push($('<li class="page-item disabled"><a class="page-link"> &raquo; </a></li>'));
-        }
+          if (results.results.hasNextPage) {
+            pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.nextPage}\' href="#"> >> </a></li>`));
+          } else {
+            pagesArray.push($('<li class="page-item disabled"><a class="page-link"> &raquo; </a></li>'));
+          }
 
-        pagination.append(...pagesArray);
-        pagination.find('a').each((i, element) => {
-          $(element).click((e) => {
-            e.preventDefault();
+          pagination.append(...pagesArray);
+          pagination.find('a').each((i, element) => {
+            $(element).click((e) => {
+              e.preventDefault();
 
-            if ($(element).attr('data-page') == 'next') loadReviews(currentPage + 1);
-            else if ($(element).attr('data-page') == 'prev') loadReviews(currentPage - 1);
-            else loadReviews(parseInt($(element).attr('data-page'), 10));
+              if ($(element).attr('data-page') == 'next') loadReviews(currentPage + 1);
+              else if ($(element).attr('data-page') == 'prev') loadReviews(currentPage - 1);
+              else loadReviews(parseInt($(element).attr('data-page'), 10));
+            });
           });
-        });
 
-        $('#movieReviews').append(pagination, ...createReviewRows(results.results.docs));
+          $('#movieReviews').append(pagination, ...createReviewRows(results.results.docs));
 
-        pagination.rPage();
+          pagination.rPage();
+        } else {
+          $('#movieReviews').append($('<h6 class="display-6" id="noReviews">No Reviews</h6>'));
+        }
+
         $('#movieReviews .spinner').addClass('d-none');
       },
     });
@@ -96,8 +101,8 @@ $(document).ready(() => {
 
     if (el.attr('type') == 'submit') {
       const data = {
-        hadUpvoted: $('#vote input[name=hadUpvoted]').val() === 'true',
-        hadDownvoted: $('#vote input[name=hadDownvoted]').val() === 'true',
+        hadUpvoted: $('#vote input[name=hadUpvoted]').val(),
+        hadDownvoted: $('#vote input[name=hadDownvoted]').val(),
         movie: $('#movie').val(),
       };
 
@@ -108,6 +113,11 @@ $(document).ready(() => {
         success: (result) => {
           if (result.success) {
             if (el.attr('data-type') == 'up') {
+              if (data.hadDownvoted) {
+                $('#downvoteCount').text(abbreviateNumber(parseInt($('#downvoteCount').attr('data-num'), 10) - 1));
+                $('#downvoteCount').attr('data-num', parseInt($('#downvoteCount').attr('data-num'), 10) - 1);
+              }
+
               $('#vote input[name=hadUpvoted]').val('true');
               $('#vote input[name=hadDownvoted]').val('false');
 
@@ -116,14 +126,14 @@ $(document).ready(() => {
               $('#vote button[data-type=down]').removeClass('disabled');
               $('#vote button[data-type=down]').attr('type', 'submit');
 
-              $('#vote #upvoteCount').text(abbreviateNumber(parseInt($('#vote #upvoteCount').attr('data-num'), 10) + 1));
-              $('#vote #upvoteCount').attr('data-num', parseInt($('#vote #upvoteCount').attr('data-num'), 10) + 1);
-
-              if (data.hadDownvoted) {
-                $('#vote #downvoteCount').text(abbreviateNumber(parseInt($('#vote #downvoteCount').attr('data-num'), 10) - 1));
-                $('#vote #downvoteCount').attr('data-num', parseInt($('#vote #downvoteCount').attr('data-num'), 10) - 1);
-              }
+              $('#upvoteCount').text(abbreviateNumber(parseInt($('#upvoteCount').attr('data-num'), 10) + 1));
+              $('#upvoteCount').attr('data-num', parseInt($('#upvoteCount').attr('data-num'), 10) + 1);
             } else {
+              if (data.hadUpvoted) {
+                $('#upvoteCount').text(abbreviateNumber(parseInt($('#upvoteCount').attr('data-num'), 10) - 1));
+                $('#upvoteCount').attr('data-num', parseInt($('#upvoteCount').attr('data-num'), 10) - 1);
+              }
+
               $('#vote input[name=hadUpvoted]').val('false');
               $('#vote input[name=hadDownvoted]').val('true');
 
@@ -132,13 +142,8 @@ $(document).ready(() => {
               $('#vote button[data-type=up]').removeClass('disabled');
               $('#vote button[data-type=up]').attr('type', 'submit');
 
-              $('#vote #downvoteCount').text(abbreviateNumber(parseInt($('#vote #downvoteCount').attr('data-num'), 10) + 1));
-              $('#vote #downvoteCount').attr('data-num', parseInt($('#vote #downvoteCount').attr('data-num'), 10) + 1);
-
-              if (data.hadUpvoted) {
-                $('#vote #upvoteCount').text(abbreviateNumber(parseInt($('#vote #upvoteCount').attr('data-num'), 10) - 1));
-                $('#vote #upvoteCount').attr('data-num', parseInt($('#vote #upvoteCount').attr('data-num'), 10) - 1);
-              }
+              $('#downvoteCount').text(abbreviateNumber(parseInt($('#downvoteCount').attr('data-num'), 10) + 1));
+              $('#downvoteCount').attr('data-num', parseInt($('#downvoteCount').attr('data-num'), 10) + 1);
             }
           }
         },
@@ -165,8 +170,8 @@ $(document).ready(() => {
 
         if (result.success) {
           $('#review')[0].reset();
-          loadReviews(1);
           $('#noReviews').remove();
+          loadReviews(1);
         }
       },
       complete: () => {

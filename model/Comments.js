@@ -29,6 +29,14 @@ const CommentSchema = new Mongoose.Schema({
     min: [0, 'Downvotes must be a positive number.'],
   },
 
+  upvoters: [
+    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Users' },
+  ],
+
+  downvoters: [
+    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Users' },
+  ],
+
   replyTo: {
     type: Mongoose.SchemaTypes.ObjectId,
     ref: 'Comments',
@@ -45,5 +53,22 @@ const CommentSchema = new Mongoose.Schema({
 });
 
 CommentSchema.plugin(MongoosePaginate);
+CommentSchema.pre('deleteMany', { document: false, query: true }, async function (next) {
+  const docs = await this.model.find(this.getFilter(), 'replies');
+  const promises = [];
+
+  docs.forEach((doc) => {
+    promises.push(new Promise((resolve, reject) => {
+      this.model.deleteMany({ _id: { $in: doc.replies } }).then((result) => {
+        resolve.result();
+      });
+    }));
+  });
+
+  await Promise.all(promises)
+    .then(() => {
+      next();
+    });
+});
 
 export default Mongoose.model('Comments', CommentSchema, 'comments');

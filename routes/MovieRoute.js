@@ -173,7 +173,7 @@ export default (function () {
           push.upvoters = _req.session.user._id;
           pull.downvoters = _req.session.user._id;
 
-          if (_req.body.hadDownvoted) {
+          if (_req.body.hadDownvoted == 'true') {
             inc.downvote = -1;
           }
 
@@ -182,7 +182,7 @@ export default (function () {
           push.downvoters = _req.session.user._id;
           pull.upvoters = _req.session.user._id;
 
-          if (_req.body.hadUpvoted) {
+          if (_req.body.hadUpvoted == 'true') {
             inc.upvote = -1;
           }
 
@@ -250,7 +250,7 @@ export default (function () {
     MovieController.get({
       filter: { _id: _req.params.movie },
     }).then((result) => {
-      if (!result.success && result.results.length > 0) {
+      if (!result.success || result.results.length <= 0) {
         _res.status(404).render('error/404', {
           layout: 'error',
           user: _req.session.user,

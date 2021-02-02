@@ -225,7 +225,7 @@ export default (function () {
         password: _req.body.password,
         email: _req.body.email,
         photo: _req.file.buffer,
-        description: _req.body.description,
+        description: _req.body.description || ' --- ',
       }).then((result) => {
         _res.send(result);
       });
@@ -247,22 +247,8 @@ export default (function () {
   });
 
   route.get('/view/:user', (_req, _res) => {
-    if (_req.session.user && _req.params.user == _req.session.user._id.toString()) {
-      if (_req.session.user.admin) {
-        _res.redirect('/admin');
-      } else {
-        _res.render('user', {
-          layout: 'default',
-          skeleton: false,
-          active: {
-            profile: true,
-          },
-          user: _req.session.user,
-          profile: _req.session.user,
-          title: _req.session.user.name,
-          script: ['user', 'rpage.min'],
-        });
-      }
+    if (_req.session.user.admin && _req.session.user._id == _req.params.user) {
+      _res.redirect('/admin');
     } else {
       AccountController.get({
         filter: {
@@ -280,7 +266,7 @@ export default (function () {
               user: _req.session.user,
               profile: result.results[0],
               title: result.results[0].name,
-              script: ['rpage.min'],
+              script: ['rpage.min', 'user'],
               active: {
                 profile: true,
               },

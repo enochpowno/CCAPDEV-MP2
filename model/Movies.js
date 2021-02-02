@@ -1,5 +1,6 @@
 import Mongoose from 'mongoose';
 import MongoosePaginate from 'mongoose-paginate-v2';
+import Reviews from './Reviews';
 
 const MovieSchema = new Mongoose.Schema({
   title: {
@@ -59,5 +60,23 @@ const MovieSchema = new Mongoose.Schema({
 });
 
 MovieSchema.plugin(MongoosePaginate);
+MovieSchema.pre('deleteMany', { document: false, query: true }, async function (next) {
+  console.log('Deleting movie');
+  const docs = await this.model.find(this.getFilter(), 'reviews');
+  const promises = [];
+
+  docs.forEach((doc) => {
+    promises.push(new Promise((resolve, reject) => {
+      Reviews.deleteMany({ _id: { $in: doc.reviews } }).then((results) => {
+        resolve(results);
+      });
+    }));
+  });
+
+  await Promise.all(promises)
+    .then((results) => {
+      next();
+    });
+});
 
 export default Mongoose.model('movie', MovieSchema, 'movies');

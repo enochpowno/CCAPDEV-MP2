@@ -36,7 +36,7 @@ export const abbreviateNumber = (value) => {
     suffixNum++;
   }
 
-  newValue = newValue.toPrecision(3);
+  newValue = (suffixNum == 0) ? newValue : newValue.toPrecision(3);
 
   newValue += suffixes[suffixNum];
   return newValue;

@@ -65,6 +65,7 @@ export default class ReviewController {
           message: 'You successfully updated that review!',
           errors: [],
           results: [result],
+          updates,
         };
       }
     } catch (e) {}
@@ -74,6 +75,7 @@ export default class ReviewController {
       message: '',
       errors: ['Something went wrong while trying to update that review!'],
       results: null,
+      updates,
     };
   }
 

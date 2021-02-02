@@ -50,8 +50,6 @@ $(document).ready(() => {
             $('form#update input[name=name]').attr('value', name);
             $('form#update textarea[name=description]').attr('value', description);
 
-            console.log(result);
-
             $('#nameView').text(result.updates.name);
             $('#descriptionView').text(result.updates.description);
 
@@ -98,7 +96,7 @@ $(document).ready(() => {
             <div class='row'>
               <p class='col-md-8'> ${(doc.content.length > 250) ? `${doc.content.substr(0, 250)}...` : doc.content} <br/> ~ <a href='/user/view/${doc.user._id}' style='text-decoration: none'>@${doc.user.username}</a></p>
               <div class='col-md-4'>
-                <a href='/review/view/${doc._id}' class='w-100 btn btn-sm btn-primary'>View Review</a>
+                <a href='/review/view?review=${doc._id}&movie=${doc.movie}' class='w-100 btn btn-sm btn-primary'>View Review</a>
               </div>
             </div>
           </div>
@@ -127,38 +125,42 @@ $(document).ready(() => {
         page,
       },
       success: (results) => {
-        console.log(results)
-        maxPages = results.results.totalPages;
+        if (results.results.totalDocs > 0) {
+          $('#noReviews').remove();
 
-        if (results.results.hasPrevPage) {
-          pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.prevPage}\' href="#"> << </a></li>`));
-        } else {
-          pagesArray.push($('<li class="page-item disabled"><a class="page-link"> << </a></li>'));
-        }
+          maxPages = results.results.totalPages;
 
-        for (let i = 0; i < maxPages; i++) {
-          pagesArray.push($(`<li class="page-item ${currentPage == i + 1 ? 'active' : ''}"><a class="page-link" data-page="${i + 1}" href="#">${i + 1}</a></li>`));
-        }
+          if (results.results.hasPrevPage) {
+            pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.prevPage}\' href="#"> << </a></li>`));
+          } else {
+            pagesArray.push($('<li class="page-item disabled"><a class="page-link"> << </a></li>'));
+          }
 
-        if (results.results.hasNextPage) {
-          pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.nextPage}\' href="#"> >> </a></li>`));
-        } else {
-          pagesArray.push($('<li class="page-item disabled"><a class="page-link"> >> </a></li>'));
-        }
+          for (let i = 0; i < maxPages; i++) {
+            pagesArray.push($(`<li class="page-item ${currentPage == i + 1 ? 'active' : ''}"><a class="page-link" data-page="${i + 1}" href="#">${i + 1}</a></li>`));
+          }
 
-        pagination.append(...pagesArray);
-        pagination.find('a').each((i, element) => {
-          $(element).click((e) => {
-            e.preventDefault();
+          if (results.results.hasNextPage) {
+            pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.nextPage}\' href="#"> >> </a></li>`));
+          } else {
+            pagesArray.push($('<li class="page-item disabled"><a class="page-link"> >> </a></li>'));
+          }
 
-            if ($(element).attr('data-page') == 'next') loadReviews(currentPage + 1);
-            else if ($(element).attr('data-page') == 'prev') loadReviews(currentPage - 1);
-            else loadReviews(parseInt($(element).attr('data-page'), 10));
+          pagination.append(...pagesArray);
+          pagination.find('a').each((i, element) => {
+            $(element).click((e) => {
+              e.preventDefault();
+
+              if ($(element).attr('data-page') == 'next') loadReviews(currentPage + 1);
+              else if ($(element).attr('data-page') == 'prev') loadReviews(currentPage - 1);
+              else loadReviews(parseInt($(element).attr('data-page'), 10));
+            });
           });
-        });
 
-        pagination.rPage();
-        $('#userReviews').append(pagination, ...createReviewRows(results.results.docs));
+          pagination.rPage();
+          $('#userReviews').append(pagination, ...createReviewRows(results.results.docs));
+        }
+
         $('#userReviews .spinner').addClass('d-none');
       },
     });
