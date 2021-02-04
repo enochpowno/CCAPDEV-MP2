@@ -57,4 +57,18 @@ $(document).ready(() => {
       this.value = '';
     }
   });
+
+  $('#addToCart').click((e) => {
+    $.ajax({
+      url: '/movie/cart/add',
+      method: 'POST',
+      data: { movie: $(e.target).attr('data-movie') },
+      success: (result) => {
+        if (result.success) {
+          $(e.target).remove();
+          $('.cart-badge').text(result.results.length);
+        }
+      }
+    });
+  });
 });

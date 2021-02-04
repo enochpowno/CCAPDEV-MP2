@@ -9,6 +9,10 @@ export default (function () {
 
   route.use('/', (_req, _res, next) => {
     if (!_req.session.user) {
+      if (_req.cookies.cart) {
+        _req.session.cart = _req.cookies.cart.split('|').filter(Boolean);
+      }
+
       if (_req.cookies.user) {
         AccountController.get({
           filter: {
@@ -37,6 +41,7 @@ export default (function () {
   route.get('/', (_req, _res) => {
     _res.render('index', {
       layout: 'skeleton',
+      cart: _req.session.cart,
       active: { home: true },
       title: 'Home Page',
       user: _req.session.user,
@@ -53,6 +58,7 @@ export default (function () {
   route.get('*', (_req, _res) => {
     _res.render('error/404', {
       layout: 'error',
+      cart: _req.session.cart,
       title: '404 Error',
     });
   });

@@ -33,11 +33,21 @@ export default class CommentController {
     return ret;
   }
 
-  async paginate({ filter, options = {} }) {
+  async paginate({ filter, options = {}, owner = null }) {
     try {
       const result = await Comments.paginate(filter, options);
 
       if (result) {
+        if (owner) {
+          for (let i = 0; i < result.docs.length; i++) {
+            if (typeof result.docs[i].user === 'string') {
+              result.docs[i].owner = result.docs[i].user == owner._id;
+            } else {
+              result.docs[i].owner = result.docs[i].user._id == owner._id;
+            }
+          }
+        }
+
         return {
           success: true,
           message: 'You successfully retrieved some comment!',
@@ -78,7 +88,7 @@ export default class CommentController {
   }
 
   async create({
-    content, review, user, replyTo,
+    content, review, user, replyTo = null,
   }) {
     const ret = {
       success: false,
@@ -95,11 +105,12 @@ export default class CommentController {
     });
 
     try {
-      ret.result = await comment.save();
+      const results = await comment.save();
+      ret.results = comment.toObject();
       ret.success = true;
     } catch (e) {
       Object.keys(e.errors).forEach((error) => {
-        ret.errors.push(error.message);
+        ret.errors.push(e.errors[error].message);
       });
     }
 

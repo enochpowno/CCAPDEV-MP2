@@ -29,6 +29,7 @@ export default (function () {
     } else {
       _res.status(404).render('error/404', {
         layout: 'error',
+        cart: _req.session.cart,
         user: _req.session.user,
       });
     }
@@ -155,6 +156,7 @@ export default (function () {
     if (!mustLogin(_req)) {
       _res.render('login', {
         layout: 'default',
+        cart: _req.session.cart,
         skeleton: false,
         active: {
           login: true,
@@ -165,6 +167,7 @@ export default (function () {
     } else {
       _res.status(403).render('error/403', {
         layout: 'error',
+        cart: _req.session.cart,
         user: _req.session.user,
       });
     }
@@ -202,6 +205,7 @@ export default (function () {
     if (!mustLogin(_req)) {
       _res.render('register', {
         layout: 'default',
+        cart: _req.session.cart,
         skeleton: false,
         active: {
           register: true,
@@ -212,6 +216,7 @@ export default (function () {
     } else {
       _res.status(403).render('error/403', {
         layout: 'error',
+        cart: _req.session.cart,
         user: _req.session.user,
       });
     }
@@ -241,7 +246,10 @@ export default (function () {
 
   route.get('/logout', (_req, _res) => {
     delete _req.session.user;
+    delete _req.session.cart;
+
     _res.clearCookie('user');
+    _res.clearCookie('cart');
 
     _res.redirect('/');
   });
@@ -262,6 +270,7 @@ export default (function () {
           } else {
             _res.render('user', {
               layout: 'default',
+              cart: _req.session.cart,
               skeleton: false,
               user: _req.session.user,
               profile: result.results[0],
@@ -275,6 +284,7 @@ export default (function () {
         } else {
           _res.status(404).render('error/404', {
             layout: 'error',
+            cart: _req.session.cart,
             user: _req.session.user,
           });
         }

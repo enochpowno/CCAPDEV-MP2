@@ -1,13 +1,13 @@
 import path from 'path';
 import express from 'express';
 import mongoose from 'mongoose';
-import { urlencoded } from 'body-parser';
+import { urlencoded, json } from 'body-parser';
 import cookieParser from 'cookie-parser';
 import expressSession from 'express-session';
 import hbs from 'express-hbs';
 import route from './route';
 import {
-  datePrint, iff, img, abbreviateNumber,
+  datePrint, iff, img, abbreviateNumber, isin, notin,
 } from './helpers';
 
 const app = express();
@@ -33,9 +33,12 @@ hbs.registerHelper('datePrint', datePrint);
 hbs.registerHelper('iff', iff);
 hbs.registerHelper('img', img);
 hbs.registerHelper('abbreviateNumber', abbreviateNumber);
+hbs.registerHelper('isin', isin);
+hbs.registerHelper('notin', notin);
 
 // setup express server
-app.use(urlencoded({ extended: false }));
+app.use(urlencoded({ extended: true }));
+app.use(json());
 
 // MS * S * M * H * D
 app.use(cookieParser());

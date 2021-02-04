@@ -1,0 +1,39 @@
+<div class="container min-vh-100 mb-5" style="margin-top: 100px;">
+  <div class="row">
+    <h5 class="col-md-12">My Cart:</h5>
+  </div>
+  <div id="movies" class="row">
+    <div class="col-md-9">
+      {{#each cart}}
+        <div class="row my-2 movie-row">
+          <div class="col-md-4 text-center">
+            <img src="{{img this.poster}}" alt="{{this.title}}" height="150px" width="auto">
+          </div>
+          <div class="col-md-8">
+            <h4>{{this.title}}</h4>
+            <b>${{this.price}}</b> <br/>
+            <b>Status: </b> {{#iff this.status 'strcmp' 'available'}} <i class="fas fa-check-circle text-success"></i> <span class="text-success">Available</span>
+            {{else}} <i class="fas fa-times-circle text-danger"></i> <span class="text-danger">Unavailable</span> {{/iff}}
+            <br>
+            <button class="my-2 btn btn-sm btn-danger remove" data-movie='{{this._id}}'>Remove From Cart</button>
+          </div>
+          <hr />
+        </div>
+      {{else}}
+      <h6 class="display-6">You have no movies in your cart...</h6>
+      {{/each}}
+    </div>
+    <div class="col-md-3">
+      <div class="sticky-top" style="top: 65px;">
+        {{#if cart}}
+        <h5>Pay Here</h5>
+        <div id="paypal-button"></div>
+        <hr/>
+        <a href="/movie/cart/clear" class="btn btn-danger w-100" id="clearCart">Clear Cart</a>
+        <br/>
+        <div id="responseView"></div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

@@ -46,6 +46,10 @@ const UserSchema = new Mongoose.Schema({
     default: false,
   },
 
+  watched: [
+    { type: Mongoose.SchemaTypes.ObjectId, ref: 'Movies' },
+  ],
+
   create_date: {
     type: Date,
     default: Date.now,

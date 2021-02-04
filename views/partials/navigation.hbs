@@ -36,6 +36,9 @@
                 <li class="dropdown-item"><a class="nav-link" href="/user/logout">Log Out</a></li>
               </ul>
             </li>
+            <li class="nav-item">
+              <a class="nav-link  {{#if active.cart }} active {{/if}}" href="/movie/view/cart"><span class="badge rounded-pill bg-primary cart-badge">{{#if cart}} {{cart.length}} {{else}} 0 {{/if}}</span> Cart</a>
+            </li>
           {{/if}}
         {{else}}
           <li class="nav-item">

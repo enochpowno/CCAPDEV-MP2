@@ -1,9 +1,16 @@
 import multer from 'multer';
 import { Router } from 'express';
+import axios from 'axios';
 import { MovieController, AccountController } from '../controller';
 import { mustLogin, querify, sanitize } from './helpers';
 
+import { PayPal } from '../helpers';
+
+const paypal = require('@paypal/checkout-server-sdk');
+
 const up = multer({});
+const environ = new paypal.core.SandboxEnvironment(PayPal.CLIENT, PayPal.SECRET);
+const paypalClient = new paypal.core.PayPalHttpClient(environ);
 
 const paginationOptions = {
   sort: '-date',
@@ -19,7 +26,11 @@ export default (function () {
   route.get('/', (_req, _res) => {
     MovieController.get({
       filter: {
-        title: querify(_req.query.q),
+        $or: [{
+          title: querify(_req.query.q),
+        }, {
+          synopsis: querify(_req.query.q),
+        }],
       },
       populate: false,
       lean: true,
@@ -162,6 +173,247 @@ export default (function () {
     }
   });
 
+  route.post('/cart/add', (_req, _res) => {
+    if (mustLogin(_req)) {
+      if (_req.session.cart) {
+        if (_req.session.cart.indexOf(_req.body.movie) > -1) {
+          _res.send({
+            success: false,
+            message: '',
+            errors: ['That movie was is already in your cart.'],
+            results: _req.session.cart,
+          });
+        } else {
+          _req.session.cart.push(_req.body.movie);
+          _res.cookie('cart', _req.session.cart.join('|'), {
+            maxAge: 1000 * 60 * 60 * 24 * 7 * 3, // 3 weeks
+            httpOnly: false,
+          });
+
+          _res.send({
+            success: true,
+            message: 'That movie was succesfully added to your cart.',
+            errors: [],
+            results: _req.session.cart,
+          });
+        }
+      } else {
+        _req.session.cart = [_req.body.movie];
+        _res.cookie('cart', _req.body.movie, {
+          maxAge: 1000 * 60 * 60 * 24 * 7 * 3, // 3 weeks
+          httpOnly: false,
+        });
+
+        _res.send({
+          success: true,
+          message: 'That movie was succesfully added to your cart.',
+          errors: [],
+          results: _req.session.cart,
+        });
+      }
+    } else {
+      _res.send({
+        success: false,
+        message: '',
+        errors: ['You must be logged in to add to your cart.'],
+        results: _req.session.cart,
+      });
+    }
+  });
+
+  route.delete('/cart/remove', (_req, _res) => {
+    if (mustLogin(_req)) {
+      if (_req.session.cart) {
+        if (_req.session.cart.indexOf(_req.body.movie) > -1) {
+          _req.session.cart.splice(_req.session.cart.indexOf(_req.body.movie), 1);
+          _res.cookie('cart', _req.session.cart.join('|'), {
+            maxAge: 1000 * 60 * 60 * 24 * 7 * 3, // 3 weeks
+            httpOnly: false,
+          });
+
+          _res.send({
+            success: true,
+            message: 'That movie was succesfully removed from your cart.',
+            errors: [],
+            results: [_req.session.cart],
+          });
+        } else {
+          _res.send({
+            success: false,
+            message: '',
+            errors: ['That movie was isn\'t in your cart.'],
+            results: [_req.session.cart],
+          });
+        }
+      } else {
+        _res.send({
+          success: false,
+          message: '',
+          errors: ['Your cart is empty.'],
+          results: [_req.session.cart],
+        });
+      }
+    } else {
+      _res.send({
+        success: false,
+        message: '',
+        errors: ['Your must be logged in to remove from your cart.'],
+        results: [_req.session.cart],
+      });
+    }
+  });
+
+  route.get('/cart/clear', (_req, res) => {
+    if (_req.session.cart) delete _req.session.cart;
+
+    res.redirect('/movie/view/cart');
+  });
+
+  route.post('/cart/purchase', (_req, _res) => {
+    if (_req.session.cart) {
+      MovieController.get({
+        filter: {
+          _id: {
+            $in: _req.session.cart,
+          },
+          status: 'available',
+        },
+        projection: '_id title price',
+      }).then((result) => {
+        let total = 0;
+        const items = result.results.reduce((arr, movie) => {
+          arr.push({
+            name: movie.title,
+            quantity: 1,
+            sku: movie._id.toString(),
+            unit_amount: {
+              currency_code: 'USD',
+              value: movie.price.toFixed(2),
+            },
+          });
+
+          total += movie.price;
+          return arr;
+        }, []);
+
+        total = total.toFixed(2);
+        const request = new paypal.orders.OrdersCreateRequest();
+        request.headers.prefer = 'return=representation';
+
+        request.requestBody({
+          intent: 'CAPTURE',
+          redirect_urls: {
+            return_url: '/movie/cart/purchase/success',
+            cancel_url: '/movie/view/cart',
+          },
+          payment_method: 'paypal',
+          purchase_units: [{
+            reference_id: Date.now(),
+            description: 'Movie Metro',
+            amount: {
+              currency_code: 'USD',
+              value: total,
+              breakdown: {
+                item_total: {
+                  currency_code: 'USD',
+                  value: total,
+                },
+              },
+            },
+            items,
+          }],
+        });
+
+        paypalClient.execute(request).then((response) => {
+          _res.status(200).send(response.result);
+        }).catch((e) => {
+          _res.sendStatus(500);
+        });
+      });
+    } else {
+      _res.sendStatus(404);
+    }
+  });
+
+  route.post('/cart/purchase/complete', (_req, _res) => {
+    if (mustLogin(_req)) {
+      console.log(_req.session.cart);
+      AccountController.update({
+        filter: {
+          _id: _req.session.user._id,
+        },
+        updates: {
+          $push: {
+            watched: {
+              $each: _req.session.cart,
+            },
+          },
+        },
+      }).then((result) => {
+        console.log(_req.body);
+        _req.session.orderID = _req.body.orderID;
+        delete _req.session.cart;
+
+        _res.send(result);
+      });
+    } else {
+      _res.send({
+        success: false,
+        message: '',
+        errors: ['You must be logged in to purchase the movies in your cart.'],
+        results: [_req.session.cart],
+      });
+    }
+  });
+
+  route.get('/view/cart/purchase/complete', (_req, _res) => {
+    if (mustLogin(true)) {
+      if (_req.session.orderID) {
+        const ordID = _req.session.orderID;
+        delete _req.session.ordID;
+
+        _res.render('complete', {
+          layout: 'default',
+          order: ordID,
+          user: _req.session.user,
+          title: 'Purchase Completed',
+        });
+      } else {
+        _res.redirect('/view/cart');
+      }
+    } else {
+      _res.status(404).render('error/404', {
+        layout: 'error',
+        cart: _req.session.cart,
+        user: _req.session.user,
+      });
+    }
+  });
+
+  route.get('/view/cart', (_req, _res) => {
+    if (mustLogin(_req)) {
+      MovieController.get({
+        filter: { _id: { $in: _req.session.cart || [] } },
+        projection: '_id title price status poster',
+      }).then((result) => {
+        _res.render('cart', {
+          layout: 'default',
+          cart: result.results,
+          user: _req.session.user,
+          script: ['cart'],
+          active: { cart: true },
+          title: 'Cart',
+        });
+      });
+    } else {
+      _res.status(404).render('error/404', {
+        layout: 'error',
+        cart: _req.session.cart,
+        user: _req.session.user,
+      });
+    }
+  });
+
   route.put('/vote/:type', (_req, _res) => {
     if (mustLogin(_req)) {
       if (_req.body.movie) {
@@ -221,7 +473,12 @@ export default (function () {
     const filter = {};
 
     if (_req.query.q) {
-      filter.title = querify(_req.query.q);
+      filter.$or = [
+        {
+          title: querify(_req.query.q),
+        }, {
+          synopsis: querify(_req.query.q),
+        }];
     }
 
     const pageOptClone = {
@@ -240,6 +497,7 @@ export default (function () {
       layout: 'default',
       skeleton: true,
       user: _req.session.user,
+      cart: _req.session.cart,
       title: `Movie Search: ${_req.query.q}`,
       script: ['search', 'rpage.min'],
       search: _req.query.q,
@@ -253,6 +511,7 @@ export default (function () {
       if (!result.success || result.results.length <= 0) {
         _res.status(404).render('error/404', {
           layout: 'error',
+          cart: _req.session.cart,
           user: _req.session.user,
         });
       } else {
@@ -262,6 +521,7 @@ export default (function () {
           user: _req.session.user,
           active: { movie: true },
           movie: result.results[0],
+          cart: _req.session.cart,
           voteStatus: (function () {
             if (_req.session.user) {
               for (let i = 0; i < result.results[0].upvoters.length; i++) {

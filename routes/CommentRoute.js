@@ -1,39 +1,42 @@
 import { Router } from 'express';
-import { CommentController } from '../controller';
-import { mustLogin } from './helpers';
+import { CommentController, ReviewController } from '../controller';
+import { mustLogin, sanitize } from './helpers';
 
 const paginationOptions = {
-  sort: 'date',
+  sort: '-date',
   page: 1,
-  limit: 15,
+  limit: 1,
   lean: true,
+  populate: [{
+    path: 'user',
+    select: 'username _id photo',
+  }, {
+    path: 'replyTo',
+    populate: {
+      path: 'user',
+      select: 'username',
+    },
+  }],
 };
 
 export default (function () {
   const route = Router();
 
-  route.get('/:review', (_req, _res) => {
-    const pageOptClone = {
-      ...paginationOptions,
-      page: (_req.query.page && _req.query.page >= 1) ? parseInt(_req.query.page, 10) : 1,
-    };
-
-    CommentController.get({
-      filter: {
-        review: _req.params.review,
-      },
-      options: pageOptClone,
-    }).then((result) => _res.send(result));
-  });
-
-  route.post('/', (_req, _res) => {
+  route.post('/', sanitize, (_req, _res) => {
     if (mustLogin(_req)) {
       CommentController.create({
         content: _req.body.content,
         user: _req.session.user._id,
         review: _req.body.review,
         replyTo: _req.body.replyTo,
-      }).then((result) => _res.send(result));
+      }).then((result) => {
+        result.results = {
+          ...result.results,
+          user: _req.session.user,
+          owner: true,
+        };
+        _res.send(result);
+      });
     } else {
       _res.send({
         success: false,
@@ -106,14 +109,34 @@ export default (function () {
     const pageOptClone = {
       ...paginationOptions,
       page: (_req.query.page && _req.query.page >= 1) ? parseInt(_req.query.page, 10) : 1,
+      skip: (_req.query.skip && _req.query.skip >= 0) ? parseInt(_req.query.skip, 10) : 0,
     };
 
     CommentController.paginate({
       filter: {
-        reply_to: _req.params.comment,
+        replyTo: _req.params.comment,
       },
       options: pageOptClone,
+      owner: _req.session.user,
     }).then((result) => _res.send(result));
+  });
+
+  route.get('/:review', (_req, _res) => {
+    const pageOptClone = {
+      ...paginationOptions,
+      page: (_req.query.page && _req.query.page >= 1) ? parseInt(_req.query.page, 10) : 1,
+      skip: (_req.query.skip && _req.query.skip >= 0) ? parseInt(_req.query.skip, 10) : 0,
+    };
+
+    CommentController.paginate({
+      filter: {
+        review: _req.params.review,
+      },
+      options: pageOptClone,
+      owner: _req.session.user,
+    }).then((result) => {
+      _res.send(result);
+    });
   });
 
   return route;

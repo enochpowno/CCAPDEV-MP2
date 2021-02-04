@@ -22,23 +22,7 @@ export default (function () {
         movie: _req.body.movie,
         title: _req.body.title,
       }).then((result) => {
-        MovieController.update({
-          filter: { _id: _req.body.movie },
-          updates: {
-            $push: {
-              reviews: result.result._id,
-            },
-          },
-        }).then((result0) => {
-          AccountController.update({
-            filter: { _id: _req.session.user._id },
-            updates: {
-              $push: {
-                reviews: result.result._id,
-              },
-            },
-          }).then((result1) => _res.send(result));
-        });
+        _res.send(result);
       });
     } else {
       _res.send({
@@ -65,6 +49,7 @@ export default (function () {
           } else {
             _res.status(500).render('error/500', {
               layout: 'error',
+              cart: _req.session.cart,
               user: _req.session.user,
             });
           }
@@ -72,12 +57,14 @@ export default (function () {
       } else {
         _res.status(404).render('error/404', {
           layout: 'error',
+          cart: _req.session.cart,
           user: _req.session.user,
         });
       }
     } else {
       _res.status(404).render('error/404', {
         layout: 'error',
+        cart: _req.session.cart,
         user: _req.session.user,
       });
     }
@@ -96,7 +83,7 @@ export default (function () {
           projection: 'password',
         }).then((result) => {
           if (result.success && result.results.length > 0) {
-            if (_req.body.id) {
+            if (_req.body.review) {
               Object.keys(_req.body).forEach((key, i, a) => {
                 if (_req.body[key] && key != 'review') updates[key] = _req.body[key];
               });
@@ -207,6 +194,7 @@ export default (function () {
         if (!result.success || result.results.length <= 0) {
           _res.status(404).render('error/404', {
             layout: 'error',
+            cart: _req.session.cart,
             user: _req.session.user,
           });
         } else {
@@ -220,18 +208,21 @@ export default (function () {
             if (!result0.success || result0.results.length <= 0) {
               _res.status(404).render('error/404', {
                 layout: 'error',
+                cart: _req.session.cart,
                 user: _req.session.user,
               });
             } else {
               _res.render('review', {
                 layout: 'default',
+                cart: _req.session.cart,
                 skeleton: false,
                 user: _req.session.user,
                 active: { movie: true },
                 review: result0.results[0],
                 movie: result.results[0],
+                cart: _req.session.cart,
                 title: `Review: ${result0.results[0].title}`,
-                script: ['review', 'rpage.min'],
+                script: ['review', 'rpage.min', 'comment'],
                 voteStatus: (function () {
                   if (_req.session.user) {
                     for (let i = 0; i < result0.results[0].upvoters.length; i++) {
@@ -253,6 +244,7 @@ export default (function () {
     } else {
       _res.status(404).render('error/404', {
         layout: 'error',
+        cart: _req.session.cart,
         user: _req.session.user,
       });
     }

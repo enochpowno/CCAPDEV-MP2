@@ -66,11 +66,13 @@ MovieSchema.pre('deleteMany', { document: false, query: true }, async function (
   const promises = [];
 
   docs.forEach((doc) => {
-    promises.push(new Promise((resolve, reject) => {
-      Reviews.deleteMany({ _id: { $in: doc.reviews } }).then((results) => {
-        resolve(results);
-      });
-    }));
+    if (doc.reviews.length > 0) {
+      promises.push(new Promise((resolve, reject) => {
+        Reviews.deleteMany({ _id: { $in: doc.reviews } }).then((results) => {
+          resolve(results);
+        });
+      }));
+    }
   });
 
   await Promise.all(promises)

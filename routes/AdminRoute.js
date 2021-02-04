@@ -9,6 +9,7 @@ export default (function () {
     } else {
       _res.status(404).render('error/404', {
         layout: 'error',
+        cart: _req.session.cart,
         user: _req.session.user,
       });
     }
@@ -17,6 +18,7 @@ export default (function () {
   route.get('/', (_req, _res) => {
     _res.render('admin', {
       layout: 'default',
+      cart: _req.session.cart,
       user: _req.session.user,
       skeleton: true,
       title: 'Admin Panel',

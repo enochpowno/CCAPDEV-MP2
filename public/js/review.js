@@ -1,8 +1,4 @@
 $(document).ready(() => {
-  $('#comment textarea').keypress((e) => {
-    console.log(e);
-  });
-
   $('#vote').submit((e) => e.preventDefault());
 
   $('#vote button').click((e) => {
@@ -69,21 +65,18 @@ $(document).ready(() => {
     $('form#update button[type=submit] span').removeClass('visually-hidden');
     $('#update .responseView').empty();
 
-    const fd = new FormData($('#update')[0]);
-
     const ajaxOpts = {
       url: '/review',
       method: 'PUT',
-      processData: false,
-      contentType: false,
-      data: fd,
+      data: $('#update').serialize(),
       success: (result) => {
         $('#update .responseView').html(createResponseView(result));
 
         if (result.success) {
-          $("#update input[name=title]").attr('value', result.updates.title);
-          $("#update textarea, #reviewContent").text(result.updates.content);
-          $("#reviewTitle").text(result.updates.title);
+          $('#update input[name=title]').attr('value', result.updates.title);
+          $('#update textarea, #reviewContent').text(result.updates.content);
+
+          $('#reviewTitle').text(result.updates.title);
           $('form#update')[0].reset();
         }
       },
