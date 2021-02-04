@@ -45,9 +45,7 @@ export default class MovieController {
           results: result,
         };
       }
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
 
     return {
       success: false,
@@ -59,6 +57,7 @@ export default class MovieController {
 
   async update({ filter, updates, options = {} }) {
     try {
+      updates.date = Date.now();
       const result = await Movies.updateMany(filter, updates, options);
 
       if (result.ok) {

@@ -3,7 +3,7 @@ import {
   Router,
 } from 'express';
 import {
-  AccountController, ReviewController,
+  AccountController, MovieController, ReviewController,
 } from '../controller';
 import {
   mustLogin, sanitize,
@@ -134,6 +134,32 @@ export default (function () {
     }
   });
 
+  route.get('/watched/:user', (_req, _res) => {
+    const pageOptClone = {
+      ...paginationOptions,
+      page: (_req.query.page && _req.query.page >= 1) ? parseInt(_req.query.page, 10) : 1,
+      projection: 'title poster _id',
+    };
+
+    AccountController.get({
+      filter: {
+        _id: _req.params.user,
+      },
+      projection: 'watched',
+    }).then((result0) => {
+      const watched = result0.results[0].watched;
+
+      MovieController.paginate({
+        filter: {
+          _id: {
+            $in: watched,
+          },
+        },
+        options: pageOptClone,
+      }).then((result) => _res.send(result));
+    });
+  });
+
   route.get('/reviews/:user', (_req, _res) => {
     const pageOptClone = {
       ...paginationOptions,
@@ -247,6 +273,7 @@ export default (function () {
   route.get('/logout', (_req, _res) => {
     delete _req.session.user;
     delete _req.session.cart;
+    delete _req.session.orderID;
 
     _res.clearCookie('user');
     _res.clearCookie('cart');

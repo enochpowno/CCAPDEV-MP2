@@ -67,6 +67,7 @@ export default class CommentController {
 
   async update({ filter, updates, options = {} }) {
     try {
+      updates.date = Date.now();
       const result = await Comments.updateMany(filter, updates, options);
 
       if (result.ok) {

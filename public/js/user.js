@@ -166,5 +166,88 @@ $(document).ready(() => {
     });
   }
 
+  function createWatchedRows(docs) {
+    const rows = [];
+
+    docs.forEach((doc) => {
+      rows.push($(`
+        <a style='text-decoration: none' href='/movie/view/${doc._id}' class='row my-2'>
+          <div class='col-md-3 my-3 text-center'>
+            <img src='${img(doc.poster)}' style='height: 50px; width: auto;'>
+          </div>
+          <div class='col-md-9 my-3'>
+            <div class='row'>
+              <div class='col-md-8'>
+                <h6>${doc.title}</h6>
+              </div>
+            </div>
+          </div>
+        </a>
+        <hr/>
+      `));
+    });
+
+    return rows;
+  }
+
+  function loadVideos(page) {
+    if (page <= 0) currentPage = 1;
+    else if (page > maxPages) currentPage = maxPages;
+    else currentPage = page;
+
+    $('#userWatched > *:not(.spinner)').remove();
+    $('#userWatched .spinner').removeClass('d-none');
+    const pagination = $('<ul class=\'pagination\'></ul>');
+    const pagesArray = [];
+
+    $.ajax({
+      url: `/user/watched/${$('#user').val()}`,
+      method: 'GET',
+      data: {
+        page,
+      },
+      success: (results) => {
+        if (results.results.totalDocs > 0) {
+          $('#noWatched').remove();
+
+          maxPages = results.results.totalPages;
+
+          if (results.results.hasPrevPage) {
+            pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.prevPage}\' href="#"> << </a></li>`));
+          } else {
+            pagesArray.push($('<li class="page-item disabled"><a class="page-link"> << </a></li>'));
+          }
+
+          for (let i = 0; i < maxPages; i++) {
+            pagesArray.push($(`<li class="page-item ${currentPage == i + 1 ? 'active' : ''}"><a class="page-link" data-page="${i + 1}" href="#">${i + 1}</a></li>`));
+          }
+
+          if (results.results.hasNextPage) {
+            pagesArray.push($(`<li class="page-item"><a class="page-link" data-page=\'${results.results.nextPage}\' href="#"> >> </a></li>`));
+          } else {
+            pagesArray.push($('<li class="page-item disabled"><a class="page-link"> >> </a></li>'));
+          }
+
+          pagination.append(...pagesArray);
+          pagination.find('a').each((i, element) => {
+            $(element).click((e) => {
+              e.preventDefault();
+
+              if ($(element).attr('data-page') == 'next') loadVideos(currentPage + 1);
+              else if ($(element).attr('data-page') == 'prev') loadVideos(currentPage - 1);
+              else loadVideos(parseInt($(element).attr('data-page'), 10));
+            });
+          });
+
+          pagination.rPage();
+          $('#userWatched').append(pagination, ...createWatchedRows(results.results.docs));
+        }
+
+        $('#userWatched .spinner').addClass('d-none');
+      },
+    });
+  }
+
+  loadVideos(1);
   loadReviews(1);
 });

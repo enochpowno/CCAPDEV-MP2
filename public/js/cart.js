@@ -40,7 +40,6 @@ $(document).ready(() => {
     },
 
     onApprove: function (data) {
-      console.log(data);
       return fetch('/movie/cart/purchase/complete', {
         method: 'post',
         headers: {
@@ -52,10 +51,10 @@ $(document).ready(() => {
       }).then(function (res) {
         return res.json();
       }).then(function (details) {
-        // if (details.success) window.location.href = '/movie/cart/purchase/complete';
-        // else {
-          // $('#responseView').html(createResponseView(details));
-        // }
+        if (details.success) window.location.href = '/movie/view/cart/purchase/complete';
+        else {
+          $('#responseView').html(createResponseView(details));
+        }
       });
     },
   }).render('#paypal-button');

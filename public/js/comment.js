@@ -241,7 +241,7 @@ $(document).ready(() => {
           if (res.hasNextPage) {
             $('#loadMore').removeClass('d-none');
             $('#loadMore').click((e) => {
-              loadComments(res.nextPage, (res.nextPage - 1) * 1);
+              loadComments(res.nextPage, (res.nextPage - 1) * 15);
             });
           }
         } else {

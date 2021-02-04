@@ -57,6 +57,7 @@ export default class ReviewController {
 
   async update({ filter, updates, options = {} }) {
     try {
+      updates.date = Date.now();
       const result = await Reviews.updateMany(filter, updates, options);
 
       if (result.ok) {

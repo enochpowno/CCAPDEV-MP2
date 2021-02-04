@@ -115,6 +115,22 @@
   <input type="hidden" name="user" id="user" value="{{profile._id}}">
   <div class="row col-md-12 mt-5">
     <div class="row">
+      <h5 class="col-md-12">Watched Movies:</h5>
+    </div>
+    <div id="userWatched">
+      <div class="spinner d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+    {{#unless profile.watched}}
+      <h6 class="display-6" id="noWatched">No Watched Movies</h6>
+    {{/unless}}
+  </div>
+
+  <div class="row col-md-12 mt-5">
+    <div class="row">
       <h5 class="col-md-12">My Reviews:</h5>
     </div>
     <div id="userReviews">

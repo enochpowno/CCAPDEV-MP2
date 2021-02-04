@@ -281,6 +281,7 @@ export default (function () {
         projection: '_id title price',
       }).then((result) => {
         let total = 0;
+        _req.session.availables = [];
         const items = result.results.reduce((arr, movie) => {
           arr.push({
             name: movie.title,
@@ -292,7 +293,9 @@ export default (function () {
             },
           });
 
+          _req.session.availables.push(movie._id.toString());
           total += movie.price;
+
           return arr;
         }, []);
 
@@ -337,7 +340,6 @@ export default (function () {
 
   route.post('/cart/purchase/complete', (_req, _res) => {
     if (mustLogin(_req)) {
-      console.log(_req.session.cart);
       AccountController.update({
         filter: {
           _id: _req.session.user._id,
@@ -350,10 +352,19 @@ export default (function () {
           },
         },
       }).then((result) => {
-        console.log(_req.body);
         _req.session.orderID = _req.body.orderID;
-        delete _req.session.cart;
+        if (_req.session.availables) {
+          _req.session.user.watched.push(..._req.session.availables);
 
+          _req.session.cart = _req.session.cart.filter((v) => !_req.session.availables.includes(v.toString()));
+        }
+
+        _res.cookie('cart', _req.session.cart.join('|'), {
+          maxAge: 1000 * 60 * 60 * 24 * 7 * 3, // 3 weeks
+          httpOnly: false,
+        });
+
+        delete _req.session.availables;
         _res.send(result);
       });
     } else {
@@ -367,19 +378,20 @@ export default (function () {
   });
 
   route.get('/view/cart/purchase/complete', (_req, _res) => {
-    if (mustLogin(true)) {
+    if (mustLogin(_req)) {
       if (_req.session.orderID) {
         const ordID = _req.session.orderID;
-        delete _req.session.ordID;
+        delete _req.session.orderID;
 
         _res.render('complete', {
           layout: 'default',
           order: ordID,
+          cart: _req.session.cart,
           user: _req.session.user,
           title: 'Purchase Completed',
         });
       } else {
-        _res.redirect('/view/cart');
+        _res.redirect('/movie/view/cart');
       }
     } else {
       _res.status(404).render('error/404', {

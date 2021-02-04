@@ -13,7 +13,8 @@
             <h4>{{this.title}}</h4>
             <b>${{this.price}}</b> <br/>
             <b>Status: </b> {{#iff this.status 'strcmp' 'available'}} <i class="fas fa-check-circle text-success"></i> <span class="text-success">Available</span>
-            {{else}} <i class="fas fa-times-circle text-danger"></i> <span class="text-danger">Unavailable</span> {{/iff}}
+            {{else}} <i class="fas fa-times-circle text-danger"></i> <span class="text-danger">Unavailable</span> <span class='text-muted'> - This movie will not be included in the payments</span>{{/iff}}
+            
             <br>
             <button class="my-2 btn btn-sm btn-danger remove" data-movie='{{this._id}}'>Remove From Cart</button>
           </div>

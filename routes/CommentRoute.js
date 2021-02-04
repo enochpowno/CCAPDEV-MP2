@@ -5,7 +5,7 @@ import { mustLogin, sanitize } from './helpers';
 const paginationOptions = {
   sort: '-date',
   page: 1,
-  limit: 1,
+  limit: 15,
   lean: true,
   populate: [{
     path: 'user',
