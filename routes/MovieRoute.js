@@ -396,6 +396,7 @@ export default (function () {
     } else {
       _res.status(404).render('error/404', {
         layout: 'error',
+        title: 'Error 404',
         cart: _req.session.cart,
         user: _req.session.user,
       });
@@ -420,6 +421,7 @@ export default (function () {
     } else {
       _res.status(404).render('error/404', {
         layout: 'error',
+        title: 'Error 404',
         cart: _req.session.cart,
         user: _req.session.user,
       });
@@ -522,7 +524,7 @@ export default (function () {
     }).then((result) => {
       if (!result.success || result.results.length <= 0) {
         _res.status(404).render('error/404', {
-          layout: 'error',
+          layout: 'error',title: 'Error 404',
           cart: _req.session.cart,
           user: _req.session.user,
         });

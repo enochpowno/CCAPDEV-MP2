@@ -62,11 +62,16 @@
             {{/if}}
             
             <br />
+            {{#if user}}
+            {{#iff movie.status 'strcmp' 'available'}}
             {{#notin movie._id user.watched }}
-              {{#notin ../movie._id ../cart}}
-              <button type="button" class="btn btn-sm btn-labeled btn-success" id="addToCart" data-movie='{{../movie._id}}'> <i class="fas fa-cart-plus"></i> Add to Cart</button>
-              {{/notin}}
+            {{#notin ../movie._id ../cart}}
+            <button type="button" class="btn btn-sm btn-labeled btn-success" id="addToCart" data-movie='{{../movie._id}}'> <i
+                class="fas fa-cart-plus"></i> Add to Cart</button>
             {{/notin}}
+            {{/notin}}
+            {{/iff}}
+            {{/if}}
         </div>
       </div>
     </div>
@@ -113,6 +118,7 @@
     {{/unless}}
     {{else}}
   {{/if}}
+
   <div class="row col-md-12 mt-5">
     <div class="row">
       <h5 class="col-md-12">Reviews:</h5>

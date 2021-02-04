@@ -29,6 +29,7 @@ export default (function () {
     } else {
       _res.status(404).render('error/404', {
         layout: 'error',
+        title: 'Error 404',
         cart: _req.session.cart,
         user: _req.session.user,
       });
@@ -193,6 +194,7 @@ export default (function () {
     } else {
       _res.status(403).render('error/403', {
         layout: 'error',
+        title: 'Error 403',
         cart: _req.session.cart,
         user: _req.session.user,
       });
@@ -242,6 +244,7 @@ export default (function () {
     } else {
       _res.status(403).render('error/403', {
         layout: 'error',
+        title: 'Error 403',
         cart: _req.session.cart,
         user: _req.session.user,
       });
@@ -282,7 +285,7 @@ export default (function () {
   });
 
   route.get('/view/:user', (_req, _res) => {
-    if (_req.session.user.admin && _req.session.user._id == _req.params.user) {
+    if (_req.session.user && _req.session.user.admin && _req.session.user._id == _req.params.user) {
       _res.redirect('/admin');
     } else {
       AccountController.get({
@@ -311,6 +314,7 @@ export default (function () {
         } else {
           _res.status(404).render('error/404', {
             layout: 'error',
+            title: 'Error 404',
             cart: _req.session.cart,
             user: _req.session.user,
           });

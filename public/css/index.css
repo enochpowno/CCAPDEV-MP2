@@ -222,4 +222,13 @@ h3.display-3 span {
   color: #ba35db !important;
 }
 
+.replies > div:nth-child(2n+1) {
+  background-color: #e2e2e2 !important;
+}
+
+#comments > div {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #888;
+}
+
 /*# sourceMappingURL=index.css.map */

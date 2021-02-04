@@ -1,4 +1,5 @@
 $(document).ready(() => {
+  const skipMult = 15;
   autosize($('#comment textarea'));
 
   $('#comment').submit((e) => {
@@ -31,9 +32,36 @@ $(document).ready(() => {
 
     if (comments) {
       comments.forEach((comment) => {
+        const loggedInButtons = isLoggedIn ? `
+          <div class='row'>
+            <div class='col-md-12 my-1'>
+              <button type="submit" class="w-100 upvote btn btn-sm btn-labeled btn-success ${comment.hadUpvoted ? 'disabled' : ''}" data-type='up' data-upvoted="${comment.hadUpvoted ? 'true' : 'false'}">
+                <span class="btn-label"><i class="far fa-thumbs-up"></i></span>
+                Upvote
+              </button>
+            </div>
+          </div>
+
+          <div class='row'>
+            <div class='col-md-12 my-1'>
+              <button type="submit" class="w-100 downvote btn btn-sm btn-labeled btn-danger ${comment.hadDownvoted ? 'disabled' : ''}" data-type='down' data-downvoted="${comment.hadDownvoted ? 'true' : 'false'}">
+                <span class="btn-label"><i class="far fa-thumbs-down"></i></span>
+                Downvote
+              </button>
+            </div>
+          </div>
+          
+          <div class='row'>
+            <div class='col-md-12'>
+              <button class="reply btn btn-outline-success btn-sm w-100 my-2" data-to='${comment._id}' data-user='${comment.user.username}'>Reply</button>
+            </div>
+          </div>
+        ` : '';
+
         const row = $(`
-          <div class='comment row'>
-            <div class='col-md-3 my-3 text-center' id='${comment._id}'>
+          <div>
+          <div class='comment row' id='${comment._id}'>
+            <div class='col-md-3 my-3 text-center'>
               <img src='${img(comment.user.photo)}' style='height: 80px; width: auto;'>
             </div>
             <div class='col-md-9 my-3'>
@@ -43,7 +71,7 @@ $(document).ready(() => {
                   <span class='text-muted'>${datePrint(new Date(comment.date))}</span>
                 </div>
               </div>
-              ${comment.replyTo ? (`<div class='row'><div class='col-md-8'><b>Reply To: </b> <a href='#${comment.replyTo._id}'>@${comment.replyTo.user.username}'s comment</a></div><div class='col-md-4'></div></div>`) : ' '}
+              ${comment.replyTo ? (`<div class='row'><div class='col-md-8'><b>Reply To: </b> <a class='moveToComment' href='#${comment.replyTo._id}'>@${comment.replyTo.user.username}'s comment</a></div><div class='col-md-4'></div></div>`) : ' '}
               <div class='row'>
                 <p class='col-md-8'> ${comment.content}</p>
                 <div class='col-md-4'>
@@ -53,39 +81,19 @@ $(document).ready(() => {
                       <span class='downvotes' data-num="${comment.downvote}">${abbreviateNumber(comment.downvote)}</span> <i class="far fa-thumbs-down"></i>
                     </div>
                   </div>
-                  <div class='row'>
-                    <div class='col-md-12 my-1'>
-                      <button type="submit" class="w-100 upvote btn btn-sm btn-labeled btn-success" data-type='up'>
-                        <span class="btn-label"><i class="far fa-thumbs-up"></i></span>
-                        Upvote
-                      </button>
-                    </div>
-                  </div>
 
-                  <div class='row'>
-                    <div class='col-md-12 my-1'>
-                      <button type="submit" class="w-100 downvote btn btn-sm btn-labeled btn-danger" data-type='down'>
-                        <span class="btn-label"><i class="far fa-thumbs-down"></i></span>
-                        Downvote
-                      </button>
-                    </div>
-                  </div>
-    <div class='row'>
-                      <div class='col-md-12'>
-                        <button class="reply btn btn-outline-success btn-sm w-100 my-2" data-to='${comment._id}' data-user='${comment.user.username}'>Reply</button>
-                      </div>
-                    </div>
+                  ${loggedInButtons}
 
                   ${comment.replies.length > 0
     ? `<div class='row'>
                     <div class='col-md-12 my-1'>
-                      <button class="view-replies w-100 downvote btn btn-sm btn-labeled btn-outline-primary" data-page='1' data-skip='0'>
+                      <button class="view-replies w-100 btn btn-sm btn-labeled btn-outline-primary" data-page='1' data-skip='0'>
                         View Replies
                       </button>
                     </div>
                   </div>` : ''}
 
-                  ${comment.owner
+                  ${comment.owner && isLoggedIn
     ? `<div class='row'>
                       <div class='col-md-12'>
                         <button class="delete btn btn-danger btn-sm w-100 my-2">Delete</button>
@@ -96,9 +104,9 @@ $(document).ready(() => {
               <div class='replyRow row'>
               </div>
             </div>
-            <div class='replies row ${comment.review ? 'ms-5' : ''}'>
-            </div>
-            <hr/>
+          </div>
+          <div class='replies row ${comment.review ? 'ms-5' : ''}'>
+          </div>
           </div>
         `);
 
@@ -117,27 +125,113 @@ $(document).ready(() => {
           <div class='col-md-4'></div>
         `);
 
+        row.find(`#${comment._id} .downvote`).click((e) => {
+          e.preventDefault();
+          const el = $(e.target);
+          const upvote = row.find(`#${comment._id} .upvote`);
+
+          $.ajax({
+            url: '/comment/vote/down',
+            method: 'PUT',
+            data: {
+              hadUpvoted: upvote.attr('data-upvoted') == 'true',
+              hadDownvoted: el.attr('data-downvoted') == 'true',
+              comment: comment._id,
+            },
+            success: (result) => {
+              if (result.success) {
+                el.addClass('disabled');
+                upvote.removeClass('disabled');
+
+                const down = parseInt(row.find(`#${comment._id} .downvotes`).attr('data-num'), 10) + 1;
+                row.find(`#${comment._id} .downvotes`).attr('data-num', down);
+                row.find(`#${comment._id} .downvotes`).text(abbreviateNumber(down));
+
+                el.attr('data-downvoted', 'true');
+
+                if (upvote.attr('data-upvoted') == 'true') {
+                  const up = parseInt(row.find(`#${comment._id} .upvotes`).attr('data-num'), 10) - 1;
+                  row.find(`#${comment._id} .upvotes`).attr('data-num', up);
+                  row.find(`#${comment._id} .upvotes`).text(abbreviateNumber(up));
+
+                  upvote.attr('data-upvoted', 'false');
+                }
+              }
+            },
+          });
+        });
+
+        row.find(`#${comment._id} .upvote`).click((e) => {
+          e.preventDefault();
+          const el = $(e.target);
+          const downvote = row.find(`#${comment._id} .downvote`);
+
+          $.ajax({
+            url: '/comment/vote/up',
+            method: 'PUT',
+            data: {
+              hadUpvoted: el.attr('data-upvoted') == 'true',
+              hadDownvoted: downvote.attr('data-downvoted') == 'true',
+              comment: comment._id,
+            },
+            success: (result) => {
+              if (result.success) {
+                el.addClass('disabled');
+                downvote.removeClass('disabled');
+
+                const up = parseInt(row.find(`#${comment._id} .upvotes`).attr('data-num'), 10) + 1;
+                row.find(`#${comment._id} .upvotes`).attr('data-num', up);
+                row.find(`#${comment._id} .upvotes`).text(abbreviateNumber(up));
+
+                el.attr('data-upvoted', 'true');
+
+                if (downvote.attr('data-downvoted') == 'true') {
+                  const down = parseInt(row.find(`#${comment._id} .downvotes`).attr('data-num'), 10) - 1;
+                  row.find(`#${comment._id} .downvotes`).attr('data-num', down);
+                  row.find(`#${comment._id} .downvotes`).text(abbreviateNumber(down));
+
+                  downvote.attr('data-downvoted', 'false');
+                }
+              }
+            },
+          });
+        });
+
+        row.find('.moveToComment').click((e) => {
+          e.preventDefault();
+
+          window.scrollTo({
+            top: $($(e.target).attr('href')).offset().top - 65,
+            left: 0,
+            behavior: 'smooth',
+          });
+        });
+
         row.find('.reply').click((e) => {
           const el = $(e.target);
-          const parent = row.parents('.comment');
+          const siblings = row.parents('.replies').siblings('.comment');
           const repRow = row.find('.replyRow');
 
-          if (row.parents('.comment').length > 0) {
-            parent.find('.replyRow textarea').attr('data-to', el.attr('data-to'));
-            parent.find('.replyRow a').attr('href', `#${el.attr('data-to')}`);
-            parent.find('.replyRow a').text(`@${el.attr('data-user')}'s comment`);
+          if (siblings.length > 0) {
+            siblings.find('.replyRow textarea').attr('data-to', el.attr('data-to'));
+            siblings.find('.replyRow textarea').focus();
+            siblings.find('.replyRow a').attr('href', `#${el.attr('data-to')}`);
+            siblings.find('.replyRow a').text(`@${el.attr('data-user')}'s comment`);
           } else {
             repRow.find('textarea').attr('data-to', el.attr('data-to'));
+            repRow.find('textarea').focus();
             repRow.find('a').attr('href', `#${el.attr('data-to')}`);
             repRow.find('a').text(`@${el.attr('data-user')}'s comment`);
           }
 
           console.log({
-            scrollTop: (parent.length > 0) ? parent.offset().top : replyRow.offset().top,
-          })
-          $('body').animate({
-            scrollTop: (parent.length > 0) ? parent.offset().top : replyRow.offset().top,
-          }, 2000);
+            scrollTop: (siblings.length > 0) ? siblings.offset().top : repRow.offset().top,
+          });
+          window.scrollTo({
+            top: (siblings.length > 0) ? siblings.offset().top : repRow.offset().top,
+            left: 0,
+            behavior: 'smooth',
+          });
         });
 
         replyRow.find('textarea').keypress((e) => {
@@ -207,6 +301,7 @@ $(document).ready(() => {
     const page = parseInt(el.attr('data-page'), 10);
     const skip = parseInt(el.attr('data-skip'), 10);
 
+    el.remove();
     $.ajax({
       url: `/comment/replies/${cid}`,
       method: 'GET',
@@ -216,6 +311,26 @@ $(document).ready(() => {
 
         if (res.totalDocs > 0) {
           row.append(createCommentRow(res.docs, true));
+
+          if (res.hasNextPage) {
+            const loadReplyRow = $(`
+              <div class='row mb-2'>
+                <div class="col-md-12">
+                  <button class="w-100 btn btn-outline-primary" data-page='${res.nextPage}' data-skip='${(res.nextPage - 1) * skipMult}'>Load More Replies</button>
+                </div>
+              </div>
+            `);
+
+            const button = loadReplyRow.find('button');
+
+            button.click((e) => {
+              e.preventDefault();
+
+              loadReplies(cid, row, button);
+            });
+
+            row.append(loadReplyRow);
+          }
         }
       },
     });
@@ -241,7 +356,7 @@ $(document).ready(() => {
           if (res.hasNextPage) {
             $('#loadMore').removeClass('d-none');
             $('#loadMore').click((e) => {
-              loadComments(res.nextPage, (res.nextPage - 1) * 15);
+              loadComments(res.nextPage, (res.nextPage - 1) * skipMult);
             });
           }
         } else {

@@ -1,0 +1,8 @@
+.replies > div:nth-child(2n + 1) {
+  background-color: #e2e2e2 !important;
+}
+
+#comments > div {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #888;
+}

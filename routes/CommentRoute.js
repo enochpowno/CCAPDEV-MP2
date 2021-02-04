@@ -76,15 +76,38 @@ export default (function () {
   route.put('/vote/:type', (_req, _res) => {
     if (mustLogin(_req)) {
       if (_req.body.comment) {
+        const push = {};
+        const pull = {};
+        const inc = {};
+
+        if (_req.params.type == 'up') {
+          push.upvoters = _req.session.user._id;
+          pull.downvoters = _req.session.user._id;
+
+          if (_req.body.hadDownvoted == 'true') {
+            inc.downvote = -1;
+          }
+
+          inc.upvote = 1;
+        } else if (_req.params.type == 'down') {
+          push.downvoters = _req.session.user._id;
+          pull.upvoters = _req.session.user._id;
+
+          if (_req.body.hadUpvoted == 'true') {
+            inc.upvote = -1;
+          }
+
+          inc.downvote = 1;
+        }
+
         CommentController.update({
           filter: {
             _id: _req.body.comment,
           },
           updates: {
-            $inc: {
-              upvote: (_req.params.type === 'up') ? 1 : 0,
-              downvote: (_req.params.type === 'down') ? 1 : 0,
-            },
+            $inc: inc,
+            $push: push,
+            $pull: pull,
           },
         }).then((result) => _res.send(result));
       } else {

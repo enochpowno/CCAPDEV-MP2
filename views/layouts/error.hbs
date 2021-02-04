@@ -1,7 +1,9 @@
-{{> header}}
+{{> header }}
+{{> navigation }}
 
-{{{body}}}
-
-<a href="back">Click Here to Go Back</a>
+<div class="container p-5" style='min-height: calc(100vh - 112px);'>
+  {{{body}}}
+  <a class="btn btn-outline-primary" href="/">Click Here to Go To Homepage</a>
+</div>
 
 {{> footer}}

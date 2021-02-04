@@ -7,8 +7,9 @@ export default (function () {
     if (_req.session.user && _req.session.user.admin) {
       next();
     } else {
-      _res.status(404).render('error/404', {
+      _res.status(500).render('error/403', {
         layout: 'error',
+        title: 'Error 403',
         cart: _req.session.cart,
         user: _req.session.user,
       });

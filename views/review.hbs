@@ -1,3 +1,5 @@
+<input type="hidden" name="review" id="review" value="{{review._id}}">
+
 {{#if user}}
 {{#iff user._id 'strcmp' review.user._id}}
 <form style="z-index: 9999;" class="modal fade" id="update" data-bs-backdrop="static" data-bs-keyboard="false"
@@ -72,13 +74,16 @@
           <i class="far fa-thumbs-up"></i><br />
           <b>Downvotes: </b> <span id="downvoteCount" data-num="{{movie.downvote}}">{{abbreviateNumber
             movie.downvote}}</span> <i class="far fa-thumbs-down"></i><br />
+          {{#if user}}
+          {{#iff movie.status 'strcmp' 'available'}}
           {{#notin movie._id user.watched }}
           {{#notin ../movie._id ../cart}}
-          <br />
           <button type="button" class="btn btn-sm btn-labeled btn-success" id="addToCart" data-movie='{{../movie._id}}'> <i
               class="fas fa-cart-plus"></i> Add to Cart</button>
           {{/notin}}
           {{/notin}}
+          {{/iff}}
+          {{/if}}
         </div>
       </div>
     </div>
@@ -192,6 +197,14 @@
         </form>
       {{/unless}}
     {{/if}}
+
+    <script>
+      {{#if user}}
+        const isLoggedIn = true;
+      {{else}}
+        const isLoggedIn = false;
+      {{/if}}
+    </script>
     <div id="commentsContainer">
       <div id="comments" class="mb-3">
 

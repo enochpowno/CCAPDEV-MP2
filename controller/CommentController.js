@@ -45,6 +45,19 @@ export default class CommentController {
             } else {
               result.docs[i].owner = result.docs[i].user._id == owner._id;
             }
+
+            // check if owner upvoted
+            for (let j = 0; j < result.docs[i].upvoters.length; j++) {
+              if (result.docs[i].upvoters[j].toString() == owner._id) {
+                result.docs[i].hadUpvoted = true;
+              }
+            }
+
+            for (let k = 0; k < result.docs[i].downvoters.length; k++) {
+              if (result.docs[i].downvoters[k].toString() == owner._id) {
+                result.docs[i].hadDownvoted = true;
+              }
+            }
           }
         }
 
@@ -55,7 +68,9 @@ export default class CommentController {
           results: result,
         };
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e)
+    }
 
     return {
       success: false,

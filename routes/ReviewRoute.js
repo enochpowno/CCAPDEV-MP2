@@ -49,6 +49,7 @@ export default (function () {
           } else {
             _res.status(500).render('error/500', {
               layout: 'error',
+              title: 'Error 500',
               cart: _req.session.cart,
               user: _req.session.user,
             });
@@ -57,6 +58,7 @@ export default (function () {
       } else {
         _res.status(404).render('error/404', {
           layout: 'error',
+          title: 'Error 404',
           cart: _req.session.cart,
           user: _req.session.user,
         });
@@ -64,6 +66,7 @@ export default (function () {
     } else {
       _res.status(404).render('error/404', {
         layout: 'error',
+        title: 'Error 404',
         cart: _req.session.cart,
         user: _req.session.user,
       });
@@ -194,6 +197,7 @@ export default (function () {
         if (!result.success || result.results.length <= 0) {
           _res.status(404).render('error/404', {
             layout: 'error',
+            title: 'Error 404',
             cart: _req.session.cart,
             user: _req.session.user,
           });
@@ -208,6 +212,7 @@ export default (function () {
             if (!result0.success || result0.results.length <= 0) {
               _res.status(404).render('error/404', {
                 layout: 'error',
+                title: 'Error 404',
                 cart: _req.session.cart,
                 user: _req.session.user,
               });
@@ -220,7 +225,6 @@ export default (function () {
                 active: { movie: true },
                 review: result0.results[0],
                 movie: result.results[0],
-                cart: _req.session.cart,
                 title: `Review: ${result0.results[0].title}`,
                 script: ['review', 'rpage.min', 'comment'],
                 voteStatus: (function () {
@@ -244,6 +248,7 @@ export default (function () {
     } else {
       _res.status(404).render('error/404', {
         layout: 'error',
+        title: 'Error 404',
         cart: _req.session.cart,
         user: _req.session.user,
       });
