@@ -135,6 +135,7 @@ $(document).ready(() => {
         success: (result) => {
           if (result.success) {
             card.remove();
+            loadMovies(currentPage ? currentPage : 1);
           }
         },
       });
