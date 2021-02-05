@@ -20,7 +20,7 @@ $(document).ready(() => {
         }
       },
       complete: () => {
-        $('form.container.card button b').text('Register');
+        $('form.container.card button b').text('Log In');
         $('form.container.card button').removeClass('disabled');
         $('form.container.card button span').addClass('visually-hidden');
       },
