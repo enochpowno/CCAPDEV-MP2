@@ -7,8 +7,7 @@
   "scripts": {
     "start": "node start.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "mock": "node mock.js",
-    "build": "concurrently \"nodemon --ignore ./public start.js\" \"sass --watch public/build/index.scss:public/css/index.css\""
+    "mock": "node mock.js"
   },
   "repository": {
     "type": "git",
