@@ -11,7 +11,9 @@ export default (function () {
     if (!_req.session.user) {
       if (_req.cookies.cart) {
         _req.session.cart = _req.cookies.cart.split('|').filter(Boolean);
-      }
+      } else if (_req.session.cart) [
+        _req.session.cart = _req.session.cart.filter(Boolean);
+      ]
 
       if (_req.cookies.user) {
         AccountController.get({
