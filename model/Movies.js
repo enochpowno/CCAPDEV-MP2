@@ -1,6 +1,7 @@
 import Mongoose from 'mongoose';
 import MongoosePaginate from 'mongoose-paginate-v2';
 import Reviews from './Reviews';
+import Users from './Users';
 
 const MovieSchema = new Mongoose.Schema({
   title: {
@@ -69,6 +70,18 @@ MovieSchema.pre('deleteMany', { document: false, query: true }, async function (
     if (doc.reviews.length > 0) {
       promises.push(new Promise((resolve, reject) => {
         Reviews.deleteMany({ _id: { $in: doc.reviews } }).then((results) => {
+          resolve(results);
+        });
+      }));
+
+      promises.push(new Promise((resolve, reject) => {
+        Users.updateMany({
+          'watched._id': doc._id,
+        }, {
+          $pull: {
+            watched: doc._id,
+          },
+        }).then((results) => {
           resolve(results);
         });
       }));

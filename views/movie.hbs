@@ -64,7 +64,7 @@
             <br />
             {{#if user}}
             {{#iff movie.status 'strcmp' 'available'}}
-            {{#notin movie._id user.watched }}
+            {{#notin ../movie._id ../user.watched }}
             {{#notin ../movie._id ../cart}}
             <button type="button" class="btn btn-sm btn-labeled btn-success" id="addToCart" data-movie="{{../movie._id}}">
              <i class="fas fa-cart-plus"></i> Add to Cart

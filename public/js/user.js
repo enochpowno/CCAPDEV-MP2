@@ -241,8 +241,11 @@ $(document).ready(() => {
 
           pagination.rPage();
           $('#userWatched').append(pagination, ...createWatchedRows(results.results.docs));
+        } else {
+          $('#userWatched').html('<h5>This user hasn\'t watched any movies yet...</h5>');
         }
-
+      },
+      complete: () => {
         $('#userWatched .spinner').addClass('d-none');
       },
     });
