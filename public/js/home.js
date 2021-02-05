@@ -6,7 +6,7 @@ function createMovieCard(movie) {
       <div class="card-body">
         <h5 class="card-title">${movie.title}</h5>
         <hr/>
-        <p class="card-text">${movie.synopsis.substr(0, 100) + ((movie.synopsis.length > 100) ? '...' : '')}</p>
+        <p class="card-text">${movie.synopsis.substr(0, 70) + ((movie.synopsis.length > 70) ? '...' : '')}</p>
       </div>
     </a>
   `);

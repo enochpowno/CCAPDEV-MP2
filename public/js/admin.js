@@ -101,7 +101,7 @@ $(document).ready(() => {
           <div class="card-body">
             <h5 class="card-title"><a href="/movie/view/${movie._id}">${movie.title}</a></h5>
             <hr/>
-            <p class="card-text">${movie.synopsis.substr(0, 100) + ((movie.synopsis.length > 100) ? '...' : '')}</p>
+            <p class="card-text">${movie.synopsis.substr(0, 70) + ((movie.synopsis.length > 70) ? '...' : '')}</p>
           </div>
           <div class="card-footer">
             <button class="update-movie btn btn-sm btn-primary">Update Movie</button>
