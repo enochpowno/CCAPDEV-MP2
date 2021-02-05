@@ -113,7 +113,7 @@ $(document).ready(() => {
         success: (result) => {
           if (result.success) {
             if (el.attr('data-type') == 'up') {
-              if (data.hadDownvoted) {
+              if (data.hadDownvoted == 'true') {
                 $('#downvoteCount').text(abbreviateNumber(parseInt($('#downvoteCount').attr('data-num'), 10) - 1));
                 $('#downvoteCount').attr('data-num', parseInt($('#downvoteCount').attr('data-num'), 10) - 1);
               }
@@ -129,7 +129,7 @@ $(document).ready(() => {
               $('#upvoteCount').text(abbreviateNumber(parseInt($('#upvoteCount').attr('data-num'), 10) + 1));
               $('#upvoteCount').attr('data-num', parseInt($('#upvoteCount').attr('data-num'), 10) + 1);
             } else {
-              if (data.hadUpvoted) {
+              if (data.hadUpvoted == 'true') {
                 $('#upvoteCount').text(abbreviateNumber(parseInt($('#upvoteCount').attr('data-num'), 10) - 1));
                 $('#upvoteCount').attr('data-num', parseInt($('#upvoteCount').attr('data-num'), 10) - 1);
               }
